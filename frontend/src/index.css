@@ -1,0 +1,159 @@
+:root {
+    background: rgb(0, 0, 0);
+}
+    
+body {
+    margin: 0px;
+    padding: 0px;
+}
+    
+canvas {
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    outline: none;
+    z-index: -1;
+}
+    
+.side-window-button {  
+    float: right;
+    display: inline-block;
+    vertical-align: middle;
+    text-align: center;
+    white-space: nowrap;
+}
+    
+.transition-button {
+    background-color: orange;
+    color: white;
+    font-size: larger;
+    border: none;
+    padding: 8px 16px;
+    cursor: pointer;
+}
+    
+.full-width {
+    width: 100%;
+}
+    
+.side-panel-top {
+    position: fixed; 
+    top: 0%;
+}
+    
+.side-window {
+    animation: animateright 0.4s;
+    height: 100%;
+    z-index: 1;
+    overflow: auto;
+    background-color: white;
+    position: fixed;
+}
+    
+#info-viewer {
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    padding: 2px;
+    top: 15px;
+    left: 15px;
+    background-color: chartreuse;
+    width: 250px;
+    border-radius: 24px;
+}
+    
+#entity-list {
+    display: flex;
+    flex-direction: column;
+    padding: 4px;
+    background-color: brown;
+}
+    
+.entity-list-item {
+    margin: 2px;
+    background-color: aqua;
+}
+    
+.entity-list-item * {
+    display: inline;
+}
+    
+.entity-search-bar {
+    margin: 2px;
+    padding: 4px;
+    width: 300px;
+}
+    
+.search-button {
+    height: 50%;
+}
+    
+.info-container {
+    display: grid;
+    grid-template-columns: 50% 50% ;
+    /* grid-template-rows: 30px; */
+    padding: 1px;
+    background-color: aqua;
+}
+    
+.info-container p {
+    display: inline;
+    margin: 2px;
+    background-color: rgb(230, 202, 255);
+}
+    
+.entity-title {
+    margin: 2px;
+    padding: 8px;
+    background-color: rgb(101, 101, 255);
+}
+    
+.info-title {
+    text-align: right;
+}
+    
+.info-title::after {
+    content: ":";
+}
+    
+.info-string {
+    float: left;
+}
+    
+#buttons {
+    display: flex;
+    flex-direction: column;
+    position: fixed; 
+    bottom: 0%;
+}
+    
+.widget-item label {
+    color: aliceblue;
+}
+    
+#database-body {
+    margin: 0;
+    display: grid;
+    grid-template-columns: 80px auto;
+    grid-template-rows: 40px 100fr;
+    width: 100%;
+    background-color: rgb(0, 255, 106);
+}
+    
+#database-back {
+    grid-column: 1 / 2;
+    grid-row: 1 / 2;
+    background-color: brown;
+}
+    
+#database-title {
+    grid-column: 2 / 3;
+    grid-row: 1 / 2;
+    background-color: burlywood;
+}
+    
+#database-view {
+    grid-column: 1 / 3;
+    grid-row: 2 / 3;
+    background-color: rgb(175, 157, 189);
+}
