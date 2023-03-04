@@ -3,3 +3,5 @@
 /backend/buildDocs/
 /backend/buildTypeorm/
 /backend/build/
+/backend/node_modules
+/frontend/node_modules
