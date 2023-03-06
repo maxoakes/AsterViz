@@ -19,7 +19,7 @@ canvas {
     top: 0;
     left: 0;
     outline: none;
-    background-color: rgb(255, 0, 255);
+    background-color: rgb(0, 0, 0);
     cursor: pointer;
 }
     

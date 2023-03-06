@@ -27,11 +27,15 @@ export const unitDictionary = {
 
 export default class SolarSystem
 {
-    scene: THREE.Scene;
-    renderer: THREE.WebGLRenderer;
-    camera: THREE.PerspectiveCamera;
-    grid: THREE.GridHelper;
-    axes: THREE.AxesHelper
+    public scene: THREE.Scene;
+    public renderer: THREE.WebGLRenderer;
+    public camera: THREE.PerspectiveCamera;
+    public grid: THREE.GridHelper;
+    public axes: THREE.AxesHelper;
+    public sun: Star;
+    public planets: Entity[];
+    public asteroids: Entity[];
+    public selectedEntity: Entity | undefined;
 
     constructor(renderer: THREE.WebGLRenderer)
     {
@@ -63,6 +67,8 @@ export default class SolarSystem
         this.scene.add( this.axes );
 
         // build the scene
+        this.asteroids = [];
+        this.planets = [];
         let ss = solarSystemPlanetData;
         for (let [planetName, attributes] of Object.entries(ss)) {
             let thisType = (planetName === 'sample') ? CelestialBody.Asteroid : CelestialBody.Planet; 
@@ -79,15 +85,15 @@ export default class SolarSystem
                 attributes.mean_anomaly,
                 attributes.true_anomaly,
                 attributes.classid);
-            this.scene.add(newPlanetObject.entityBody);
-            this.scene.add(newPlanetObject.entityOrbit);
+            if (thisType == CelestialBody.Planet)
+                this.planets.push(newPlanetObject);
+            else
+                this.asteroids.push(newPlanetObject);
         }
-        let sun = new Star(metersToUnits(695700000), 0xffff00);
-        this.scene.add(sun.star)
+        this.sun = new Star(metersToUnits(695700000), 0xffff00);
 
+        this.populateScene();
 
-
-        // event listener for when the page is resized
         window.addEventListener('resize', this.resize);
         this.resize();
     }
@@ -100,7 +106,21 @@ export default class SolarSystem
         console.log(`Window Resized to ${this.camera.aspect}`)
     }
 
-
+    populateScene = () =>
+    {
+        console.log("Refeshing Scene")
+        this.selectedEntity = undefined;
+        this.scene.clear();
+        this.scene.add(this.sun.star);
+        this.asteroids.forEach(asteroid => {
+            this.scene.add(asteroid.entityBody);
+            this.scene.add(asteroid.entityOrbit);
+        });
+        this.planets.forEach(planet => {
+            this.scene.add(planet.entityBody);
+            this.scene.add(planet.entityOrbit);
+        })
+    }
     //     const raycaster = new THREE.Raycaster();
     //     let intersectedObject;
 
@@ -169,32 +189,6 @@ export default class SolarSystem
     //     }
 
     //     let entities = [];
-
-    //     function initSystem()
-    //     {
-    //         let sun = new Star(metersToUnits(695700000), 0xffff00)
-    //         let mercuryData = Planets.default['Mercury'];
-    //         let mercury = new Entity('planet', mercuryData.name, mercuryData.diameter, mercuryData.albedo, mercuryData.eccentricity, mercuryData.semimajor_axis, mercuryData.perihelion, mercuryData.inclination, mercuryData.asc_node_long, mercuryData.arg_periapsis, mercuryData.mean_anomaly, mercuryData.true_anomaly, mercuryData.classid);
-    //         let venusData = Planets.default['Venus'];
-    //         let venus = new Entity('planet', venusData.name, venusData.diameter, venusData.albedo, venusData.eccentricity, venusData.semimajor_axis, venusData.perihelion, venusData.inclination, venusData.asc_node_long, venusData.arg_periapsis, venusData.mean_anomaly, venusData.true_anomaly, venusData.classid);
-    //         let EarthData = Planets.default['Earth'];
-    //         let earth = new Entity('planet', EarthData.name, EarthData.diameter, EarthData.albedo, EarthData.eccentricity, EarthData.semimajor_axis, EarthData.perihelion, EarthData.inclination, EarthData.asc_node_long, EarthData.arg_periapsis, EarthData.mean_anomaly, EarthData.true_anomaly, EarthData.classid);
-    //         let MarsData = Planets.default['Mars'];
-    //         let mars = new Entity('planet', MarsData.name, MarsData.diameter, MarsData.albedo, MarsData.eccentricity, MarsData.semimajor_axis, MarsData.perihelion, MarsData.inclination, MarsData.asc_node_long, MarsData.arg_periapsis, MarsData.mean_anomaly, MarsData.true_anomaly, MarsData.classid);
-    //         let JupiterData = Planets.default['Jupiter'];
-    //         let jupiter = new Entity('planet', JupiterData.name, JupiterData.diameter, JupiterData.albedo, JupiterData.eccentricity, JupiterData.semimajor_axis, JupiterData.perihelion, JupiterData.inclination, JupiterData.asc_node_long, JupiterData.arg_periapsis, JupiterData.mean_anomaly, JupiterData.true_anomaly, JupiterData.classid);
-    //         let SaturnData = Planets.default['Saturn'];
-    //         let saturn = new Entity('planet', SaturnData.name, SaturnData.diameter, SaturnData.albedo, SaturnData.eccentricity, SaturnData.semimajor_axis, SaturnData.perihelion, SaturnData.inclination, SaturnData.asc_node_long, SaturnData.arg_periapsis, SaturnData.mean_anomaly, SaturnData.true_anomaly, SaturnData.classid);
-    //         let NeptuneData = Planets.default['Neptune'];
-    //         let neptune = new Entity('planet', NeptuneData.name, NeptuneData.diameter, NeptuneData.albedo, NeptuneData.eccentricity, NeptuneData.semimajor_axis, NeptuneData.perihelion, NeptuneData.inclination, NeptuneData.asc_node_long, NeptuneData.arg_periapsis, NeptuneData.mean_anomaly, NeptuneData.true_anomaly, NeptuneData.classid);
-    //         let UranusData = Planets.default['Uranus'];
-    //         let uranus = new Entity('planet', UranusData.name, UranusData.diameter, UranusData.albedo, UranusData.eccentricity, UranusData.semimajor_axis, UranusData.perihelion, UranusData.inclination, UranusData.asc_node_long, UranusData.arg_periapsis, UranusData.mean_anomaly, UranusData.true_anomaly, UranusData.classid);
-    //         let PlutoData = Planets.default['Pluto'];
-    //         let pluto = new Entity('planet', PlutoData.name, PlutoData.diameter, PlutoData.albedo, PlutoData.eccentricity, PlutoData.semimajor_axis, PlutoData.perihelion, PlutoData.inclination, PlutoData.asc_node_long, PlutoData.arg_periapsis, PlutoData.mean_anomaly, PlutoData.true_anomaly, PlutoData.classid);
-
-    //         let sample = new Entity('asteroid', sampleEntity.name, sampleEntity.diameter, sampleEntity.albedo, sampleEntity.eccentricity, sampleEntity.semimajor_axis, sampleEntity.perihelion, sampleEntity.inclination, sampleEntity.asc_node_long, sampleEntity.arg_periapsis, sampleEntity.mean_anomaly, sampleEntity.true_anomaly, sampleEntity.classid);
-    //     }
-    //     initSystem()
 
     //     function populateSceneList()
     //     {

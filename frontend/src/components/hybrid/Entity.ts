@@ -44,7 +44,7 @@ export default class Entity
         let semiMinorAxis = (semimajor_axis * Math.sqrt(1-eccentricity**2))
         let semiLatusRectum = semimajor_axis * (1-eccentricity**2)
         let focusDistance = eccentricity*semimajor_axis
-        console.log(`${name}, b:${semiMinorAxis}, focus:${focusDistance}`);
+        // console.log(`${name}, b:${semiMinorAxis}, focus:${focusDistance}`);
 
         // create orbit shape
         let orbitEllipse = new THREE.EllipseCurve(
@@ -58,7 +58,8 @@ export default class Entity
         let points = orbitEllipse.getPoints(Math.max(64, Math.round(2000*eccentricity)));
 
         // create the actual orbit line 3D object
-        let orbitLine = new THREE.Line(new THREE.BufferGeometry().setFromPoints(points), new THREE.LineBasicMaterial({color:0x00ff00, opacity:1}));
+        let orbitColor = (type == CelestialBody.Planet) ? 0x00ff00 : 0xff00ff;
+        let orbitLine = new THREE.Line(new THREE.BufferGeometry().setFromPoints(points), new THREE.LineBasicMaterial({color:orbitColor, opacity:1}));
 
         orbitLine.rotateY(degToRad(asc_node_long)) // rotate along reference plane for long of ascending node 
         orbitLine.rotateX(degToRad(inclination+90)) //rotate along reference plane for inclination

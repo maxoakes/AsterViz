@@ -1,7 +1,6 @@
 import {useEffect, useState} from 'react';
 import initialState, {getRandomProfile} from "../initialState";
 import {Profile} from "./Profile";
-import {Title} from "../react-three-fiber/Home";
 
 function Match() {
     let [currentProfile, setCurrentProfile] = useState(initialState.currentProfile);
@@ -30,7 +29,6 @@ function Match() {
 
     return (
       <>
-          <Title/>
           {profile}
       </>
     );
