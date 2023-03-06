@@ -1,22 +1,32 @@
 :root {
-    background: rgb(0, 0, 0);
+    /* if you see this color, something went really wrong */
+    background: rgb(255, 255, 255); 
 }
-    
+
+#root {
+    width: 100vw;
+    height: 100vh;
+}
+
 body {
     margin: 0px;
     padding: 0px;
 }
     
 canvas {
-    cursor: pointer;
+    margin: 0px;
+    position: fixed;
     top: 0;
     left: 0;
     outline: none;
-    z-index: -1;
+    background-color: rgb(255, 0, 255);
+    cursor: pointer;
 }
     
-.side-window-button {  
-    float: right;
+.side-window-button {
+    position: fixed; 
+    top: 0;
+    right: 0;
     display: inline-block;
     vertical-align: middle;
     text-align: center;
@@ -42,6 +52,9 @@ canvas {
 }
     
 .side-window {
+    position: fixed; 
+    top: 0;
+    right: 0;
     animation: animateright 0.4s;
     height: 100%;
     z-index: 1;
