@@ -1,8 +1,13 @@
 import { useState, useEffect, useRef } from "react";
+import { render } from "react-dom";
 import * as THREE from "three";
 import { Scene } from "three";
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import Entity from "./Entity";
-import SolarSystem from "./SolarSystem";
+import { metersToUnits } from "./Math";
+import { solarSystemPlanetData } from "./Planets";
+import SolarSystem, { CelestialBody } from "./SolarSystem";
+import Star from "./Star";
 
 export function Home()
 {
@@ -13,6 +18,7 @@ export function Home()
   const [allPlanets, setAllPlanets] = useState(initialState);
   const [allAsteroids, setAllAsteroids] = useState(initialState);
   const [selectedEntity, setSelectedEntity] = useState(undefined);
+  // const [solarSystemScene, setSolarSystemScene] = useState(new SolarSystem(null));
   let solarSystemScene: SolarSystem;
 
   useEffect(() => {
@@ -22,13 +28,16 @@ export function Home()
     const renderer = new THREE.WebGLRenderer({canvas: ref.current, antialias: true});
     
     // where all the good stuff happens
-    solarSystemScene = new SolarSystem(renderer);
-    setAllAsteroids(solarSystemScene.asteroids);
+    console.log("Building new scene");
+    solarSystemScene = new SolarSystem(renderer)
+    console.log(solarSystemScene)
+    //setSolarSystemScene(scene);
 
     let animate = () =>
     {
       frameRequest = requestAnimationFrame(animate);
       solarSystemScene.renderer.render(solarSystemScene.scene, solarSystemScene.camera);
+      // setSolarSystemScene(solarSystemScene)
     };
     animate();
 
@@ -37,26 +46,17 @@ export function Home()
       }
   }, []);
 
-  useEffect(() => {
-    if (!solarSystemScene) return;
-    console.log(`grid ${gridActive}`)
-    solarSystemScene.grid.visible = gridActive;
-    console.log(`scene grid ${solarSystemScene.grid.visible}`)
-  }, [gridActive]);
-
-  useEffect(() => {
-    console.log(allAsteroids)
-  }, [allAsteroids])
-
   return (
     <>
-    <canvas ref={ref}/>
-    <SidePanel/>
-    <InfoView/>
-    <div id="buttons">
-      <WidgetButton name="grid-toggle" text="Show Reference Plane Grid" isChecked={gridActive} onToggleClick={() => setGridActive(!gridActive)}/>
-      <WidgetButton name="axes-toggle" text="Show Center 3D Axes" isChecked={axesActive} onToggleClick={() => setAxesActive(!axesActive)}/>
-    </div>
+      <div id='canvas-container'>
+        <canvas ref={ref}/>
+      </div>
+      <SidePanel/>
+      <InfoView/>
+      <div id="buttons">
+        <WidgetButton name="grid-toggle" text="Show Reference Plane Grid" isChecked={gridActive} onToggleClick={() => setGridActive(!gridActive)}/>
+        <WidgetButton name="axes-toggle" text="Show Center 3D Axes" isChecked={axesActive} onToggleClick={() => setAxesActive(!axesActive)}/>
+      </div>
     </>
   );
 }

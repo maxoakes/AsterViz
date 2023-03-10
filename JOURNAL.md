@@ -18,6 +18,12 @@ Today, I will convert the HTML to Three.js GUI as planned, but in addition, I wi
 
 By the end of today, I want to have my Three.js Typescript-only form be active on a canvas component on the home page, and that Canvas component be the only thing on the home page.
 
-End of Day:
+Middle of the Day:
 
 I wanted to share some pain: I spent about 2 hours trying to figure out why my mouse controls were not working (left click does nothing and right click opens context menu), then I realized that I had a leftover CSS `z-index: -1;` for the canvas, and I guess the behavior of this on a canvas is different on React than it is for regular HTML
+
+End of the day:
+
+I have hit a wall attempting the pure Three.js within a React canvas. As it turns out, there are no tutorials, libraries or any other material on GUIs for Three.js. This means I will need to use React alongside Three.js, so I will need to use React Three Fiber.
+
+I also did convert my Three.js javascript into typescript and made the code better overall, so hopefully this will make it easier in the long run.

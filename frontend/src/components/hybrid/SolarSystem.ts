@@ -7,6 +7,7 @@ import Entity from "./Entity.js";
 import { metersToUnits } from "./Math.js";
 import { solarSystemPlanetData } from "./Planets.js";
 import Star from "./Star.js";
+import { WebGLRenderer } from "three";
 
 export enum CelestialBody {
     Star = -1,
@@ -37,14 +38,39 @@ export default class SolarSystem
     public asteroids: Entity[];
     public selectedEntity: Entity | undefined;
 
-    constructor(renderer: THREE.WebGLRenderer)
+    constructor(renderer: THREE.WebGLRenderer | null)
     {
         // init the scene
         this.scene = new THREE.Scene();
-        this.renderer = renderer
-        this.renderer.setSize(window.innerWidth, window.innerHeight);
-        console.log("In constructor for solar system renderer")
+        if (renderer)
+        {
+            console.log("Building solar system using provided renderer")
+            this.renderer = renderer
+        }
+        else
+        {
+            this.renderer = new WebGLRenderer();
+            let container: HTMLElement | null = document.getElementById('canvas-container');
+            if (container)
+            {
+                console.warn("Building solar system and appending render to a found container")
+                container.appendChild(this.renderer.domElement);
+            }
+            else
+            {
+                console.error("Building blank scene, no root element found!")
+                this.camera = new THREE.PerspectiveCamera(40, 16 / 9, 0.1, 10000);
+                this.grid = new THREE.GridHelper( 100, 100 );
+                this.axes = new THREE.AxesHelper( 50 );
+                this.sun = this.sun = new Star(1, 0xff00ff);
+                this.planets = [];
+                this.asteroids = [];
+                return;
+            }
+        }
 
+        this.renderer.setSize(window.innerWidth, window.innerHeight);
+        
         this.camera = new THREE.PerspectiveCamera(
             40, // Field of view
             16 / 9, // Aspect ratio
@@ -56,14 +82,10 @@ export default class SolarSystem
         const controls = new OrbitControls(this.camera, this.renderer.domElement);
         controls.enableDamping = false;
 
-        // helpers
-        // show 1x1 unit grid for 100 units in x and z
-        // x=red, y=green, z=blue
-        this.grid = new THREE.GridHelper( 100, 100 );
+        this.grid = new THREE.GridHelper( 100, 100 ); // show 1x1 unit grid for 100 units in x and z
         this.scene.add( this.grid );
 
-        // Init 3D Widget Axes
-        this.axes = new THREE.AxesHelper( 50 );
+        this.axes = new THREE.AxesHelper( 50 ); // x=red, y=green, z=blue
         this.scene.add( this.axes );
 
         // build the scene
@@ -120,6 +142,8 @@ export default class SolarSystem
             this.scene.add(planet.entityBody);
             this.scene.add(planet.entityOrbit);
         })
+        this.scene.add(this.axes);
+        this.scene.add(this.grid);
     }
     //     const raycaster = new THREE.Raycaster();
     //     let intersectedObject;
