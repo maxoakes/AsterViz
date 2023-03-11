@@ -4,42 +4,103 @@ import {SetStateAction, useEffect, useMemo, useRef, useState} from "react";
 import * as THREE from "three";
 import {solarSystemPlanetData} from "./Planets";
 import Entity from "./Entity";
-import {au, CelestialBody, degToRad, metersToUnits, minEntityRadius} from "./helper";
+import {au, CelestialBody, degToRad, metersToUnits, minEntityRadius, sunRadius} from "./helper";
 import { Vector3 } from "three";
 
 // https://codesandbox.io/s/qxjoj?file=/src/App.js
 export function Home()
 {
-
+  const [asteroids, setAsteroids] = useState<Entity[]>([]);
+	const [planets, setPlanets] = useState<Entity[]>([]);
   const [selectedEntity, setSelectedEntity] = useState<Entity>(null!);
 
   function assignSelected(entity: Entity)
   {
     setSelectedEntity(entity);
-    console.log(selectedEntity)
+  }
+
+  function appendAsteroid(entity: Entity)
+  {
+    setAsteroids(asteroids => [...asteroids, entity])
+  }
+
+  function appendPlanet(entity: Entity)
+  {
+    setPlanets(planets => [...planets, entity])
+  }
+
+  function toggleVisibility(entity: Entity)
+  {
+    let updatedEntity = entity;
+    
+    let planetIndex = planets.indexOf(entity);
+    let asteroidIndex = asteroids.indexOf(entity);
+    if (planetIndex > -1)
+    {
+      let arrayCopy = [...planets];
+      let itemCopy = planets[planetIndex];
+      planets[planetIndex] = updatedEntity;
+      if (itemCopy)
+      {
+        itemCopy.isVisible = !itemCopy.isVisible;
+        arrayCopy[planetIndex] = itemCopy;
+        setPlanets(arrayCopy)
+      }
+    }
+    else if (asteroidIndex > -1)
+    {
+      let arrayCopy = [...asteroids];
+      let itemCopy = asteroids[asteroidIndex];
+      asteroids[planetIndex] = updatedEntity;
+      if (itemCopy)
+      {
+        itemCopy.isVisible = !itemCopy.isVisible;
+        arrayCopy[asteroidIndex] = itemCopy;
+        setAsteroids(arrayCopy)
+      }
+    }
+    else
+    {
+      console.warn("Entity not found anywhere?!")
+    }
+    console.log(`Changing visibility of ${entity.name} to ${entity.isVisible}`)
+  }
+
+  function removeEntity(entity: Entity)
+  {
+    let copy = [...asteroids];
+    let index = copy.indexOf(entity);
+    if (index > -1)
+    {
+      copy.splice(index, 1);
+      setAsteroids(copy);
+    }
+    
   }
 
 	return (
 		<>
 			<Canvas shadows={false}>
-				<SolarSystem assignSelected={assignSelected}/>
+				<SolarSystem assignSelected={assignSelected} appendAsteroid={appendAsteroid} appendPlanet={appendPlanet} planets={planets} asteroids={asteroids}/>
         <PerspectiveCamera fov={40} aspect={16 / 9} near={0.1} far={10000}/>
 			  <OrbitControls makeDefault enableDamping={false} position={new THREE.Vector3(-3,3,3)}/>
         <ambientLight intensity={1}/>
 			</Canvas>
 			<InfoView selectedEntity={selectedEntity}/>
+      <SidePanel planets={planets} asteroids={asteroids} toggle={toggleVisibility} trash={removeEntity}/>
 		</>
 	);
 }
 
 export type SolarSystemProp = {
-  assignSelected: (entity: Entity) => void
+  appendAsteroid: (entity: Entity) => void,
+  appendPlanet: (entity: Entity) => void,
+  assignSelected: (entity: Entity) => void,
+  planets: Entity[],
+  asteroids: Entity[]
 }
 
-export function SolarSystem({assignSelected}: SolarSystemProp) {
-
-	const [asteroids, setAsteroids] = useState<Entity[]>([]);
-	const [planets, setPlanets] = useState<Entity[]>([]);
+export function SolarSystem({appendAsteroid, appendPlanet, assignSelected, planets, asteroids}: SolarSystemProp) {
 
 	useEffect(() => {
 		console.log("Creating solar system in useEffect");
@@ -61,12 +122,11 @@ export function SolarSystem({assignSelected}: SolarSystemProp) {
 				attributes.classid);
 			if (thisType == CelestialBody.Planet)
       {
-				// console.log("Adding planet");
-				setPlanets(planets => [...planets, newPlanetObject]);
+				appendPlanet(newPlanetObject);
 			}
       else
-      { // @ts-ignore
-				setAsteroids(asteroids => [...asteroids, newPlanetObject]);
+      {
+				appendAsteroid(newPlanetObject);
 			}
 		}
 	}, []);
@@ -80,12 +140,12 @@ export function SolarSystem({assignSelected}: SolarSystemProp) {
       </mesh>
 			{planets == null ? null :
 				planets.map((entity) => {
-					return <EntityComponent entity={entity} assignSelected={assignSelected}/>
+					return <EntityComponent key={entity.name} entity={entity} assignSelected={assignSelected}/>
 				})
 			}
       {asteroids == null ? null :
 				asteroids.map((entity) => {
-					return <EntityComponent  entity={entity} assignSelected={assignSelected}/>
+					return <EntityComponent key={entity.name} entity={entity} assignSelected={assignSelected}/>
 				})
 			}
 			<Axes isVisible={true}/>
@@ -114,7 +174,14 @@ function EntityComponent(props: EntityProps) {
     degToRad(0) // aRotation
   ).getPoints(Math.max(64, Math.round(2000*entity.eccentricity))), []);
 	return (<>
-		<mesh {...props} ref={planetMesh} name={entity.name} position={[metersToUnits((entity.perihelion)*au), 0, 0]} onClick={(event) => {assignSelected(entity)}}>
+		<mesh 
+      {...props} 
+      ref={planetMesh} 
+      name={entity.name} 
+      position={[metersToUnits((entity.perihelion)*au), 0, 0]} 
+      onClick={(event) => {assignSelected(entity)}} 
+      visible={entity.isVisible}
+    >
       {entity.type === CelestialBody.Planet ? <sphereGeometry args={[visualRadius, 64, 32]}/> : <icosahedronGeometry args={[visualRadius, 1]}/>}
 			<meshStandardMaterial color={(entity.type == CelestialBody.Planet) ? 0x00ff00 : 0x0000ff}/>
 		</mesh>
@@ -163,15 +230,18 @@ export function InfoView(props: InfoViewProp) {
 
   let infoItems = createInfoDictionary(selectedEntity);
   const infoList = Object.keys(infoItems).map(item => 
-    <>
+    <div className="info-container" key={item}>
       <p className="info-title">{item}</p>
       <p className="info-string">{infoItems[item]}</p>
-    </>);
+    </div>);
 	return (
-		<div id="info-viewer">
-      {(infoItems) ? <div className="info-container">{infoList}</div> : <></>}
-		</div>
-	)
+    <>
+      {(selectedEntity) ? 
+        <div id="info-viewer">
+          {infoList}
+        </div> : <></>
+      }
+    </>)
 }
 
 function createInfoDictionary(entity: Entity | undefined): Record <string, any>
@@ -196,8 +266,25 @@ function createInfoDictionary(entity: Entity | undefined): Record <string, any>
   };
 }
 
-export function SidePanel() {
+type SidePanelProp = {
+  planets: Entity[],
+  asteroids: Entity[]
+  toggle: (entity: Entity) => void
+  trash: (entity: Entity) => void
+}
+export function SidePanel(props: SidePanelProp)
+{
+  let {planets, asteroids, toggle, trash} = props;
 	const [isOpen, setIsOpen] = useState(false);
+  const allEntities = [...planets, ...asteroids];
+
+  const entityChecklist = allEntities.map(item => 
+    <div className="entity-list-item" key={item.name}>
+      <input type={"checkbox"} name={`${item.name}-toggle`} onClick={() => toggle(item)} checked={item.isVisible} />
+      <label htmlFor={`${item.name}-toggle`}>{item.name}</label>
+      {(item.type == CelestialBody.Asteroid) ? <button type="button" onClick={() => trash(item)}>Remove from Scene</button> : <></>}
+    </div>
+  )
 
 	return (
 		<>
@@ -205,36 +292,15 @@ export function SidePanel() {
 				<button onClick={() => setIsOpen(current => !current)}
 								className="transition-button full-width">Close &times;</button>
 				<div id="entity-list">
-					<div className="entity-list-item">
-						<input type="checkbox" id="sun-toggle" name="sun-toggle" checked/>
-						<label htmlFor="sun-toggle">Sun</label>
-					</div>
-					<p>List of all planets and asteroids in window</p>
-					<p>'Add' button to add asteroid from the database</p>
-					<p>Link to go to different page to search for asteroids in DB</p>
+          {entityChecklist}
 				</div>
+        <input type="text" name="find" onChange={e => {}}/>
 				<button onClick={() => console.log("DB")} className="transition-button full-width">Go to Database Search
 				</button>
 			</div>
 			<button className="side-window-button transition-button" onClick={() => setIsOpen(current => !current)}>icon
 			</button>
 		</>
-	)
-}
-
-export type WidgetButtonProp = {
-	name: string,
-	text: string,
-	isChecked: boolean,
-	onToggleClick: () => void,
-}
-
-export function WidgetButton({name, text, isChecked, onToggleClick}: WidgetButtonProp) {
-	return (
-		<div className="widget-item">
-			<input type="checkbox" id={name} name={name} onClick={onToggleClick} checked={isChecked}/>
-			<label htmlFor={name}>{text}</label>
-		</div>
 	)
 }
 

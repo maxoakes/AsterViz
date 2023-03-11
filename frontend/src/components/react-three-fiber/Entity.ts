@@ -23,6 +23,9 @@ export default class Entity
     semiLatusRectum: number;
     focusDistance: number;
 
+    // react things
+    isVisible: boolean;
+
     constructor(type: CelestialBody, name: string, diameter: number, albedo: number, 
         eccentricity: number, semimajor_axis: number, perihelion: number, 
         inclination: number, asc_node_long: number, arg_periapsis: number, 
@@ -46,5 +49,7 @@ export default class Entity
         this.semiMinorAxis = (semimajor_axis * Math.sqrt(1-eccentricity**2))
         this.semiLatusRectum = semimajor_axis * (1-eccentricity**2)
         this.focusDistance = eccentricity*semimajor_axis
+
+        this.isVisible = true;
     }
 }
