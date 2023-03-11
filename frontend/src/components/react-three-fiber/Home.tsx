@@ -1,11 +1,10 @@
 import {OrbitControls, PerspectiveCamera, Line} from "@react-three/drei";
 import {Canvas, ThreeElements, useFrame} from "@react-three/fiber";
-import {SetStateAction, useEffect, useMemo, useRef, useState} from "react";
+import {Fragment, useEffect, useMemo, useRef, useState} from "react";
 import * as THREE from "three";
 import {solarSystemPlanetData} from "./Planets";
 import Entity from "./Entity";
 import {au, CelestialBody, degToRad, metersToUnits, minEntityRadius, sunRadius} from "./helper";
-import { Vector3 } from "three";
 
 // https://codesandbox.io/s/qxjoj?file=/src/App.js
 export function Home()
@@ -82,14 +81,29 @@ export function Home()
 		<>
 			<Canvas shadows={false}>
 				<SolarSystem assignSelected={assignSelected} appendAsteroid={appendAsteroid} appendPlanet={appendPlanet} planets={planets} asteroids={asteroids}/>
-        <PerspectiveCamera fov={40} aspect={16 / 9} near={0.1} far={10000}/>
-			  <OrbitControls makeDefault enableDamping={false} position={new THREE.Vector3(-3,3,3)}/>
+        <ForeverCamera asteroids={asteroids} planets={planets} selectedEntity={selectedEntity}/>
         <ambientLight intensity={1}/>
 			</Canvas>
 			<InfoView selectedEntity={selectedEntity}/>
       <SidePanel planets={planets} asteroids={asteroids} toggle={toggleVisibility} trash={removeEntity}/>
 		</>
 	);
+}
+
+export type ForeverCameraProps = {
+  planets: Entity[],
+  asteroids: Entity[],
+  selectedEntity: Entity
+}
+export function ForeverCamera({planets, asteroids, selectedEntity}: ForeverCameraProps)
+{
+  const cam = useMemo( () =>
+  <>
+    <PerspectiveCamera fov={40} aspect={16 / 9}/>
+    <OrbitControls makeDefault position={new THREE.Vector3(-3,3,3)}/>
+  </>, [] );
+  
+  return (<>{cam}</>)
 }
 
 export type SolarSystemProp = {
@@ -280,7 +294,7 @@ export function SidePanel(props: SidePanelProp)
 
   const entityChecklist = allEntities.map(item => 
     <div className="entity-list-item" key={item.name}>
-      <input type={"checkbox"} name={`${item.name}-toggle`} onClick={() => toggle(item)} checked={item.isVisible} />
+      <input type={"checkbox"} name={`${item.name}-toggle`} onClick={() => toggle(item)} checked={item.isVisible} onChange={(e => {})}/>
       <label htmlFor={`${item.name}-toggle`}>{item.name}</label>
       {(item.type == CelestialBody.Asteroid) ? <button type="button" onClick={() => trash(item)}>Remove from Scene</button> : <></>}
     </div>
