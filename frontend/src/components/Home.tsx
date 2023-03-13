@@ -277,8 +277,9 @@ export function SidePanel(props: SidePanelProp)
   const entityChecklist = allEntities.map(item => 
     <div className="entity-list-item" key={item.name}>
       <input type={"checkbox"} name={`${item.name}-toggle`} onClick={() => toggle(item)} checked={item.isVisible} onChange={(e => {})}/>
+      {(item.type == CelestialBody.Asteroid) ? <button type="button" onClick={() => trash(item)} className="inline-entity-button"><img src="./src/img/trash128.png"/></button> : <></>}
       <label htmlFor={`${item.name}-toggle`}>{item.name}</label>
-      {(item.type == CelestialBody.Asteroid) ? <button type="button" onClick={() => trash(item)}>Remove from Scene</button> : <></>}
+      
     </div>
   )
 

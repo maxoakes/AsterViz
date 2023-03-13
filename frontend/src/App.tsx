@@ -1,8 +1,5 @@
 import {Link, Route, Routes} from 'react-router-dom';
 import { Home } from './components/Home';
-import Match from './components/Match';
-import {useEffect, useState} from "react";
-import initialState from "./initialState";
 import { Database } from './components/Database';
 
 export type AsteroidFromDatabase = {
