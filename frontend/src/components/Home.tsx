@@ -7,6 +7,8 @@ import Entity from "./Entity";
 import {au, CelestialBody, degToRad, metersToUnits, minEntityRadius, sunRadius} from "./helper";
 import { httpClient } from "../services/HttpService";
 import { ReactSearchAutocomplete } from 'react-search-autocomplete'
+import { AsteroidFromDatabase } from "App";
+import { Link, useNavigate } from "react-router-dom";
 
 export function Home()
 {
@@ -75,8 +77,11 @@ export function Home()
       copy.splice(index, 1);
       setAsteroids(copy);
     }
-    
   }
+
+  useEffect(() => {
+		console.log("Canvas Main Page Rendered");
+	});
 
 	return (
 		<>
@@ -210,30 +215,6 @@ function EntityComponent(props: EntityProps) {
 	)
 }
 
-function Box(props: ThreeElements['mesh']) {
-	// This reference will give us direct access to the mesh
-	const mesh = useRef<THREE.Mesh>(null!)
-
-	// Set up state for the hovered and active state
-	const [hovered, setHover] = useState(false)
-	const [active, setActive] = useState(false)
-	// Subscribe this component to the render-loop, rotate the mesh every frame
-	useFrame((state, delta) => (mesh.current.rotation.x += delta))
-	// Return view, these are regular three.js elements expressed in JSX
-	return (
-		<mesh
-			{...props}
-			ref={mesh}
-			scale={active ? 1.5 : 1}
-			onClick={(event) => setActive(!active)}
-			onPointerOver={(event) => setHover(true)}
-			onPointerOut={(event) => setHover(false)}>
-			<boxGeometry args={[1, 1, 1]}/>
-			<meshStandardMaterial color={hovered ? 0xffffff : 0xffff00}/>
-		</mesh>
-	)
-}
-
 type InfoViewProp = {
   selectedEntity: Entity
 }
@@ -288,9 +269,10 @@ type SidePanelProp = {
 }
 export function SidePanel(props: SidePanelProp)
 {
-  let {planets, asteroids, appendAsteroid, toggle, trash} = props;
+  const {planets, asteroids, appendAsteroid, toggle, trash} = props;
 	const [isOpen, setIsOpen] = useState(false);
   const allEntities = [...planets, ...asteroids];
+  const navigate = useNavigate();
 
   const entityChecklist = allEntities.map(item => 
     <div className="entity-list-item" key={item.name}>
@@ -314,35 +296,11 @@ export function SidePanel(props: SidePanelProp)
 			<button className="side-window-button first-button" onClick={() => setIsOpen(current => !current)}>
         <img src="./src/img/aster128.png" className="button-icon"/>
       </button>
-      <button className="side-window-button second-button" onClick={() => console.log("DB")}>
+      <button className="side-window-button second-button" onClick={() => navigate('/database')}>
         <img src="./src/img/db128.png" className="button-icon"/>
-      </button>
-      <button className="side-window-button third-button" onClick={() => console.log("About page")}>
-        <img src="./src/img/about128.png" className="button-icon"/>
       </button>
 		</>
 	)
-}
-
-type AsteroidFromDatabase = {
-  absmag: number,
-  albedo: number,
-  arg_periapsis: number,
-  asc_node_long: number,
-  created_at: string,
-  diameter: number,
-  eccentricity: number
-  fancy_name: string,
-  full_name: string,
-  id: number,
-  inclination: number,
-  mean_anomaly: number,
-  neo: boolean
-  pdes: number
-  perihelion: number,
-  pha: boolean,
-  semimajor_axis: number,
-  spkid: string
 }
 
 type SearchBarProps = {
