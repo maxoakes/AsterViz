@@ -356,19 +356,10 @@ export function SearchBar(props: SearchBarProps)
 
   useEffect(() => {
     const fetchAsteroids = async() => {
-			if (query)
-      {
-        const response = await httpClient.get(`/asteroids/name/${query}/10/0`);
-        setData(response.data);
-      }
+      const response = await httpClient.get(`/asteroids/name/${query}/10/0`);
+      setData(response.data);
 		};
-    
-    const delayDebounceFn = setTimeout(async () => {
-      await fetchAsteroids().catch(console.error);
-      console.log(query)
-      console.log(data)
-    }, 500)
-    return () => clearTimeout(delayDebounceFn)
+    fetchAsteroids().catch(console.error);
   }, [query])
   
   const handleOnSearch = (string: string, results: any) => {

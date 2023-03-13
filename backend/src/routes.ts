@@ -4,7 +4,7 @@ import {FastifyInstance, FastifyReply, FastifyRequest, RouteShorthandOptions} fr
 import {User} from "./db/models/user";
 import {Classification} from "./db/models/classification";
 import {Asteroid} from "./db/models/asteroid";
-import {ILike, LessThan, Not} from "typeorm";
+import {ILike, LessThan, Like, Not} from "typeorm";
 
 /**
  * App plugin where we construct our routes
@@ -125,9 +125,20 @@ export async function asterviz_routes(app: FastifyInstance): Promise<void> {
 	 * @name get/profiles
 	 * @function
 	 */
-	app.get("/profiles", async (req, reply) => {
-		// let profiles = await app.db.profile.find();
-		// reply.send(profiles);
+	app.get("/asteroids/name/:string/:limit/:offset", async (req: any, reply) => {
+		const namePart = req.params.string;
+		const offset = req.params.offset;
+		const limit = req.params.limit
+
+		let asteroids = await app.db.asteroid.find({
+			relations: [],
+			where: {
+				full_name: Like(`%${namePart}%`)
+			},
+			take: limit,
+			skip: offset
+		});
+		reply.send(asteroids);
 	});
 
 
