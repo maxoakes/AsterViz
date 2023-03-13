@@ -1,12 +1,13 @@
 import {OrbitControls, PerspectiveCamera, Line} from "@react-three/drei";
 import {Canvas, ThreeElements, useFrame} from "@react-three/fiber";
-import {Fragment, useEffect, useMemo, useRef, useState} from "react";
+import {Fragment, useCallback, useEffect, useMemo, useRef, useState} from "react";
 import * as THREE from "three";
 import {solarSystemPlanetData} from "./Planets";
 import Entity from "./Entity";
 import {au, CelestialBody, degToRad, metersToUnits, minEntityRadius, sunRadius} from "./helper";
+import { httpClient } from "../services/HttpService";
+import { ReactSearchAutocomplete } from 'react-search-autocomplete'
 
-// https://codesandbox.io/s/qxjoj?file=/src/App.js
 export function Home()
 {
   const [asteroids, setAsteroids] = useState<Entity[]>([]);
@@ -85,7 +86,7 @@ export function Home()
         <ambientLight intensity={1}/>
 			</Canvas>
 			<InfoView selectedEntity={selectedEntity}/>
-      <SidePanel planets={planets} asteroids={asteroids} toggle={toggleVisibility} trash={removeEntity}/>
+      <SidePanel planets={planets} asteroids={asteroids} appendAsteroid={appendAsteroid} toggle={toggleVisibility} trash={removeEntity}/>
 		</>
 	);
 }
@@ -96,14 +97,11 @@ export type ForeverCameraProps = {
   selectedEntity: Entity
 }
 export function ForeverCamera({planets, asteroids, selectedEntity}: ForeverCameraProps)
-{
-  const cam = useMemo( () =>
-  <>
+{  
+  return (<>
     <PerspectiveCamera fov={40} aspect={16 / 9}/>
     <OrbitControls makeDefault position={new THREE.Vector3(-3,3,3)}/>
-  </>, [] );
-  
-  return (<>{cam}</>)
+  </>)
 }
 
 export type SolarSystemProp = {
@@ -206,7 +204,8 @@ function EntityComponent(props: EntityProps) {
       rotation={[degToRad(entity.inclination+90), 0, degToRad(entity.asc_node_long)]} 
       points={orbitPoints} 
       color={(entity.type == CelestialBody.Planet) ? 0x00ff00 : 0xff00ff}
-      wireframe lineWidth={0.001}/>
+      wireframe lineWidth={0.001}
+      visible={entity.isVisible}/>
     </>
 	)
 }
@@ -282,13 +281,14 @@ function createInfoDictionary(entity: Entity | undefined): Record <string, any>
 
 type SidePanelProp = {
   planets: Entity[],
-  asteroids: Entity[]
+  asteroids: Entity[],
+  appendAsteroid: (entity: Entity) => void,
   toggle: (entity: Entity) => void
   trash: (entity: Entity) => void
 }
 export function SidePanel(props: SidePanelProp)
 {
-  let {planets, asteroids, toggle, trash} = props;
+  let {planets, asteroids, appendAsteroid, toggle, trash} = props;
 	const [isOpen, setIsOpen] = useState(false);
   const allEntities = [...planets, ...asteroids];
 
@@ -303,19 +303,129 @@ export function SidePanel(props: SidePanelProp)
 	return (
 		<>
 			<div className="side-window" style={{display: isOpen ? "block" : "none", right: 0}} id="rightMenu">
-				<button onClick={() => setIsOpen(current => !current)}
-								className="transition-button full-width">Close &times;</button>
+				<button onClick={() => setIsOpen(current => !current)} className="transition-button full-width close-button">
+          Close &times;
+        </button>
+        <SearchBar appendAsteroid={appendAsteroid}/>
 				<div id="entity-list">
           {entityChecklist}
 				</div>
-        <input type="text" name="find" onChange={e => {}}/>
-				<button onClick={() => console.log("DB")} className="transition-button full-width">Go to Database Search
-				</button>
 			</div>
-			<button className="side-window-button transition-button" onClick={() => setIsOpen(current => !current)}>icon
-			</button>
+			<button className="side-window-button first-button" onClick={() => setIsOpen(current => !current)}>
+        <img src="./src/img/aster128.png" className="button-icon"/>
+      </button>
+      <button className="side-window-button second-button" onClick={() => console.log("DB")}>
+        <img src="./src/img/db128.png" className="button-icon"/>
+      </button>
+      <button className="side-window-button third-button" onClick={() => console.log("About page")}>
+        <img src="./src/img/about128.png" className="button-icon"/>
+      </button>
 		</>
 	)
+}
+
+type AsteroidFromDatabase = {
+  absmag: number,
+  albedo: number,
+  arg_periapsis: number,
+  asc_node_long: number,
+  created_at: string,
+  diameter: number,
+  eccentricity: number
+  fancy_name: string,
+  full_name: string,
+  id: number,
+  inclination: number,
+  mean_anomaly: number,
+  neo: boolean
+  pdes: number
+  perihelion: number,
+  pha: boolean,
+  semimajor_axis: number,
+  spkid: string
+}
+
+type SearchBarProps = {
+  appendAsteroid: (entity: Entity) => void,
+}
+export function SearchBar(props: SearchBarProps)
+{
+  const {appendAsteroid} = props;
+  const [query, setQuery] = useState('');
+  const [data, setData] = useState<AsteroidFromDatabase[]>([]);
+
+  useEffect(() => {
+    const fetchAsteroids = async() => {
+			if (query)
+      {
+        const response = await httpClient.get(`/asteroids/name/${query}/10/0`);
+        setData(response.data);
+      }
+		};
+    
+    const delayDebounceFn = setTimeout(async () => {
+      await fetchAsteroids().catch(console.error);
+      console.log(query)
+      console.log(data)
+    }, 500)
+    return () => clearTimeout(delayDebounceFn)
+  }, [query])
+  
+  const handleOnSearch = (string: string, results: any) => {
+    setQuery(string)
+  };
+
+  const handleOnHover = (result: any) => {
+    console.log(result);
+  };
+
+  const handleOnSelect = (item: AsteroidFromDatabase) => {
+    console.log("Chose", item);
+    const newAsteroid = new Entity(
+      CelestialBody.Asteroid, item.full_name, item.diameter, item.albedo, 
+      item.eccentricity, item.semimajor_axis, item.perihelion, item.inclination,
+      item.asc_node_long, item.arg_periapsis, item.mean_anomaly, item.mean_anomaly, 0);
+    appendAsteroid(newAsteroid)
+  };
+
+  const handleOnFocus = () => {
+    console.log("Focused");
+  };
+
+  const handleOnClear = () => {
+    console.log("Cleared");
+  };
+
+  return (
+    <div className="main-search-bar-container">
+      <ReactSearchAutocomplete
+        items={data}
+        fuseOptions={{ keys: ["full_name"] }} // Search on both fields
+        resultStringKeyName="full_name" // String to display in the results
+        onSearch={handleOnSearch}
+        onHover={handleOnHover}
+        onSelect={handleOnSelect}
+        onFocus={handleOnFocus}
+        onClear={handleOnClear}
+        showIcon={true}
+        styling={{
+          height: "34px",
+          border: "1px solid darkgreen",
+          borderRadius: "4px",
+          backgroundColor: "white",
+          boxShadow: "none",
+          hoverBackgroundColor: "lightgreen",
+          color: "darkgreen",
+          fontSize: "12px",
+          fontFamily: "Courier",
+          iconColor: "green",
+          lineColor: "lightgreen",
+          placeholderColor: "darkgreen",
+          clearIconMargin: "3px 8px 0 0",
+          zIndex: 2,
+        }}
+      />
+    </div>)
 }
 
 type AxesProp = { isVisible: boolean }

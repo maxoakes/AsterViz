@@ -25,21 +25,49 @@ canvas {
     
 .side-window-button {
     position: fixed; 
-    top: 0;
-    right: 0;
+    margin: 0px;
+    padding: 0;
     display: inline-block;
     vertical-align: middle;
     text-align: center;
     white-space: nowrap;
+    border: none;
+    cursor: pointer;
+    height: 35px;
+}
+
+.button-icon {
+    padding: 0px;
+    margin: 5px;
+    height: 25px;
+    width: 25px;
+}
+
+.first-button {
+    top: 20px;
+    right: 0;
+}
+
+.second-button {
+    top: 70px;
+    right: 0;
+}
+
+.third-button {
+    top: 120px;
+    right: 0;
 }
     
 .transition-button {
-    background-color: orange;
-    color: white;
+    background-color: rgb(255, 255, 255);
+    color: rgb(0, 0, 0);
     font-size: larger;
     border: none;
-    padding: 8px 16px;
     cursor: pointer;
+}
+
+.close-button {
+    height: 50px;
 }
     
 .full-width {
@@ -55,14 +83,18 @@ canvas {
     position: fixed; 
     top: 0;
     right: 0;
-    animation: animateright 0.4s;
     height: 100%;
+    width: 25%;
     z-index: 1;
     overflow: auto;
-    background-color: white;
+    background-color: rgb(131, 102, 102);
     position: fixed;
 }
-    
+
+.main-search-bar-container {
+    margin: 8px;
+}
+
 #info-viewer {
     display: flex;
     flex-direction: column;
