@@ -119,13 +119,12 @@ export async function asterviz_routes(app: FastifyInstance): Promise<void> {
 	});
 
 
-	// PROFILE Route
 	/**
-	 * Route listing all current profiles
-	 * @name get/profiles
+	 * Route listing asteroids given a name
+	 * @name get/asteroids
 	 * @function
 	 */
-	app.get("/asteroids/name/:string/:limit/:offset", async (req: any, reply) => {
+	app.get("/asteroid/search/:spkid/:full_name/:pdes/:neo/:pha/:absmag/:diameter/:albedo/:eccentricity/:semimajor_axis/:perihelion/:inclination/:asc_node_long/:arg_periapsis/:mean_anomaly/:classification/:creator", async (req: any, reply) => {
 		const namePart = req.params.string;
 		const offset = req.params.offset;
 		const limit = req.params.limit
@@ -141,23 +140,40 @@ export async function asterviz_routes(app: FastifyInstance): Promise<void> {
 		reply.send(asteroids);
 	});
 
+	type FrontEndBodyRequest = {
+		"spkid": string,
+		"full_name": string,
+		"pdes": string,
+		"neo": boolean,
+		"pha": boolean,
+		"absmag": number,
+		"diameter": number,
+		"albedo": number,
+		"eccentricity": number,
+		"semimajor_axis": number,
+		"perihelion": number,
+		"inclination": number,
+		"asc_node_long": number,
+		"arg_periapsis": number,
+		"mean_anomaly": number,
+		"classification": string,
+		"creator": string,
+		"limit": number,
+		"offset": number
+	};
+	app.post("/asteroid/search", async (req: any, reply: FastifyReply) => {
 
-	app.post("/profiles", async (req: any, reply: FastifyReply) => {
+		const request: FrontEndBodyRequest = req.body;
+		let asteroids = await app.db.asteroid.find({
+			relations: ["classification", "creator"],
+			where: {
+				full_name: Like(`%${request.full_name}%`),
+			},
+			take: request.limit,
+			skip: request.offset
+		});
 
-	// 	const {name} = req.body;
-
-	// 	const myUser = await app.db.user.findOneByOrFail({});
-
-	//   const newProfile = new Profile();
-	//   newProfile.name = name;
-	// 	newProfile.picture = "ph.jpg";
-	// 	newProfile.user = myUser;
-
-	// 	await newProfile.save();
-
-	// 	//manually JSON stringify due to fastify bug with validation
-	// 	// https://github.com/fastify/fastify/issues/4017
-	// 	await reply.send(JSON.stringify(newProfile));
+		reply.send(asteroids);
 	});
 
 	app.delete("/profiles", async (req: any, reply: FastifyReply) => {
@@ -181,24 +197,4 @@ export async function asterviz_routes(app: FastifyInstance): Promise<void> {
 	// 	// https://github.com/fastify/fastify/issues/4017
 	// 	await reply.send(JSON.stringify(res));
 	});
-}
-
-// Appease typescript request gods
-interface IPostUsersBody {
-	name: string,
-	email: string,
-}
-
-/**
- * Response type for post/users
- */
-export type IPostUsersResponse = {
-	/**
-	 * User created by request
-	 */
-	user: User,
-	/**
-	 * IP Address user used to create account
-	 */
-	ip_address: string
 }
