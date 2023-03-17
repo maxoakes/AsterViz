@@ -9,6 +9,7 @@ import {getDirName} from "./lib/helpers";
 import logger from "./lib/logger";
 import {asterviz_routes} from "./routes";
 import DbPlugin from "./plugins/database";
+import cors from "@fastify/cors";
 
 
 
@@ -29,6 +30,12 @@ export async function buildApp(useLogging: boolean) {
 	try {
 		// add express-like 'app.use' middleware support
 		await app.register(fastifyMiddie);
+
+		await app.register(cors, {
+			origin: (origin, cb) => {
+				cb(null, true);
+			}
+		});
 
 		// add static file handling
 		await app.register(staticFiles, {

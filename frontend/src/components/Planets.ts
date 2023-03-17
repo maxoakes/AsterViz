@@ -158,7 +158,7 @@ export const solarSystemPlanetData = {
         neo: false,
         pha: false,
         absmag: 0.0,
-        diameter: 1188300*2, //km
+        diameter: 1188.3*2, //km
         albedo: 0.52,
         eccentricity: 0.2488,
         semimajor_axis: 39.482, //au

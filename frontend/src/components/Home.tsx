@@ -1,13 +1,12 @@
-import {OrbitControls, PerspectiveCamera, Line} from "@react-three/drei";
-import {Canvas, ThreeElements, useFrame} from "@react-three/fiber";
+import {OrbitControls, PerspectiveCamera, Line, useTexture} from "@react-three/drei";
+import {Canvas, ThreeElements, useFrame, useLoader} from "@react-three/fiber";
 import {Fragment, useCallback, useEffect, useMemo, useRef, useState} from "react";
 import * as THREE from "three";
 import {solarSystemPlanetData} from "./Planets";
 import Entity from "./Entity";
-import {au, CelestialBody, degToRad, metersToUnits, minEntityRadius, sunRadius} from "./helper";
+import {AsteroidResponse, au, CelestialBody, degToRad, metersToUnits, minEntityRadius, sunRadius} from "./helper";
 import { httpClient } from "../services/HttpService";
 import { ReactSearchAutocomplete } from 'react-search-autocomplete'
-import { AsteroidFromDatabase } from "App";
 import { Link, useNavigate } from "react-router-dom";
 
 export function Home()
@@ -152,8 +151,8 @@ export function SolarSystem({appendAsteroid, appendPlanet, assignSelected, plane
 	return (
 		<>
 			<mesh name="Sun">
-        <sphereGeometry args={[Math.max(metersToUnits(695700000), minEntityRadius*8), 64, 32]}/>
-        <meshStandardMaterial color={0xff8800}/>
+        <sphereGeometry args={[Math.max(metersToUnits(695700000), minEntityRadius*10), 64, 32]}/>
+        <meshStandardMaterial {...useTexture({map: './src/img/textures/2k_sun.jpg'})}/>
       </mesh>
 			{planets == null ? null :
 				planets.map((entity) => {
@@ -180,9 +179,42 @@ function EntityComponent(props: EntityProps) {
 	// This reference will give us direct access to the mesh
 	const planetMesh = useRef<THREE.Mesh>(null!);
   const orbitLine = useRef<THREE.Line>(null!);
+  let texture = null;
+  switch (props.entity.name)
+  {
+    case "Mercury":
+      texture = useTexture({map: './src/img/textures/2k_mercury.jpg'});
+      break;
+    case "Venus":
+      texture = useTexture({map: './src/img/textures/2k_venus_atmosphere.jpg'});
+      break;
+    case "Earth":
+      texture = useTexture({map: './src/img/textures/2k_earth_daymap.jpg'});
+      break;
+    case "Mars":
+      texture = useTexture({map: './src/img/textures/2k_mars.jpg'});
+      break;
+    case "Jupiter":
+      texture = useTexture({map: './src/img/textures/2k_jupiter.jpg'});
+      break;
+    case "Saturn":
+      texture = useTexture({map: './src/img/textures/2k_saturn.jpg'});
+      break;
+    case "Uranus":
+      texture = useTexture({map: './src/img/textures/2k_uranus.jpg'});
+      break;
+    case "Neptune":
+      texture = useTexture({map: './src/img/textures/2k_neptune.jpg'});
+      break;
+    case "Pluto":
+      texture = useTexture({map: './src/img/textures/1k_pluto.jpg'});
+      break;
+    default:
+      break;
+  }
 
 	let {entity, assignSelected} = props;
-  let visualRadius = Math.max(metersToUnits(entity.diameter/2), minEntityRadius*4)
+  let visualRadius = Math.max(metersToUnits(entity.diameter/2)*400000, minEntityRadius*2)
   let orbitPoints = useMemo(() => new THREE.EllipseCurve(
     entity.focusDistance, 0, // ax, aY
     entity.semimajor_axis, entity.semiMinorAxis, // semiminor axis, semimajor axis
@@ -199,8 +231,8 @@ function EntityComponent(props: EntityProps) {
       onClick={(event) => {assignSelected(entity)}} 
       visible={entity.isVisible}
     >
-      {entity.type === CelestialBody.Planet ? <sphereGeometry args={[visualRadius, 64, 32]}/> : <icosahedronGeometry args={[visualRadius, 1]}/>}
-			<meshStandardMaterial color={(entity.type == CelestialBody.Planet) ? 0x00ff00 : 0x0000ff}/>
+      {entity.type === CelestialBody.Planet ? <sphereGeometry args={[visualRadius, 64, 32]}/> : <icosahedronGeometry args={[visualRadius, 2]}/>}
+			<meshStandardMaterial {...texture} color={entity.type === CelestialBody.Planet ? 0xffffff : 0xff00ff}/>
 		</mesh>
     <Line 
       // ref={orbitLine}
@@ -311,11 +343,11 @@ export function SearchBar(props: SearchBarProps)
 {
   const {appendAsteroid} = props;
   const [query, setQuery] = useState('');
-  const [data, setData] = useState<AsteroidFromDatabase[]>([]);
+  const [data, setData] = useState<AsteroidResponse[]>([]);
 
   useEffect(() => {
     const fetchAsteroids = async() => {
-      const response = await httpClient.get(`/asteroids/name/${query}/10/0`);
+      const response = await httpClient.get(`/asteroid/name/${query}`);
       setData(response.data);
 		};
     fetchAsteroids().catch(console.error);
@@ -329,7 +361,7 @@ export function SearchBar(props: SearchBarProps)
     console.log(result);
   };
 
-  const handleOnSelect = (item: AsteroidFromDatabase) => {
+  const handleOnSelect = (item: AsteroidResponse) => {
     console.log("Chose", item);
     const newAsteroid = new Entity(
       CelestialBody.Asteroid, item.full_name, item.diameter, item.albedo, 

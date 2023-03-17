@@ -45,3 +45,18 @@ I had an idea of how to visually improve the main page layout, so I spent about 
 I also wanted to add the ability to search for an asteroid from the backend database and add it to the scene. I spent only 5 minutes adding the backend route to the database to GET an asteroid by name; it was pretty easy.
 
 Now that a route was made, I had to come up with a search mechanism. I knew that there seems to be a package for everything these days, so I searched for a react search bar component, and sure enough there was one, so I added it to my project. It appears to work pretty well. When a user makes a query, a GET request goes to the backend to do a `like` query to the asteroid database in the `full_name` field. I limited the response length to only a few asteroids, because the database could be very, very long, and the responses could be also long. Once the backend sends the array of asteroid objects, the frontend creates an entity object to store the asteroid's orbital information, and that asteroid is added to the Solar System's asteroid state, thus updating the scene. Since every other part of that process was implemented last week, this asteroid appending process worked flawlessly.
+
+# March 14
+I am attempting to build a table display that will allow for the user to query for different aspects of an asteroid, but I am not extremely concerned I will run out of time for this project, so I think I will need to abandon the table search function. I already have the function on the main page to run a GET call to the backend, so I have achieved that communication requirement.
+
+I will need to implement file storage, logging in with auth0, and a microservice.
+
+The file storage will just store some UV image textures for the planets
+auth0 will allow the user to log in. If I find that I have time, I will allow the user to create asteroids
+
+I cannot think of a microservice that I can build that will be meaningful and be completable in a short amount of time, so my initial thought is to make a Java microservice that will allow for a single GET route that will get the number of asteroids in the backend. Since I know Java, and this is a simple route, this should not be a problem.
+
+By the time I submit this project, it will visibly be a half-complete project. I wish I had at least two more weeks to work on this.
+
+# March 16
+I found some free textures to apply to planets, so I now have content to use for the file storage requirement of this project.

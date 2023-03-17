@@ -28,3 +28,22 @@ export enum CelestialBody {
     Planet = 0,
     Asteroid = 1,
 }
+
+export type AsteroidResponse = {
+    "users_name": string,
+    "classifications_abbreviation": string,
+    "spkid": string,
+    "full_name": string,
+    "neo": boolean,
+    "pha": boolean,
+    "absmag": number,
+    "diameter": number,
+    "albedo": number,
+    "eccentricity": number,
+    "semimajor_axis": number,
+    "perihelion": number,
+    "inclination": number,
+    "asc_node_long": number,
+    "arg_periapsis": number,
+    "mean_anomaly": number,
+};

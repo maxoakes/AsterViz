@@ -124,55 +124,72 @@ export async function asterviz_routes(app: FastifyInstance): Promise<void> {
 	 * @name get/asteroids
 	 * @function
 	 */
-	app.get("/asteroid/search/:spkid/:full_name/:pdes/:neo/:pha/:absmag/:diameter/:albedo/:eccentricity/:semimajor_axis/:perihelion/:inclination/:asc_node_long/:arg_periapsis/:mean_anomaly/:classification/:creator", async (req: any, reply) => {
+	app.get("/asteroid/name/:string", async (req: any, reply) => {
 		const namePart = req.params.string;
-		const offset = req.params.offset;
-		const limit = req.params.limit
 
-		let asteroids = await app.db.asteroid.find({
-			relations: [],
-			where: {
-				full_name: Like(`%${namePart}%`)
-			},
-			take: limit,
-			skip: offset
-		});
+		let asteroids = await app.db.asteroid.createQueryBuilder("asteroids")
+			.select(["spkid",
+				"full_name",
+				"neo",
+				"pha",
+				"absmag",
+				"diameter",
+				"albedo",
+				"eccentricity",
+				"semimajor_axis",
+				"perihelion",
+				"inclination",
+				"asc_node_long",
+				"arg_periapsis",
+				"mean_anomaly",
+				"users.name",
+				"classifications.abbreviation"
+			])
+			.innerJoin("asteroids.creator", "users")
+			.innerJoin("asteroids.classification", "classifications")
+			.where(`asteroids.full_name LIKE '%${namePart}%'`)
+			.limit(20)
+			.execute()
+			app.log.info(asteroids)
 		reply.send(asteroids);
 	});
 
 	type FrontEndBodyRequest = {
-		"spkid": string,
-		"full_name": string,
-		"pdes": string,
-		"neo": boolean,
-		"pha": boolean,
-		"absmag": number,
-		"diameter": number,
-		"albedo": number,
-		"eccentricity": number,
-		"semimajor_axis": number,
-		"perihelion": number,
-		"inclination": number,
-		"asc_node_long": number,
-		"arg_periapsis": number,
-		"mean_anomaly": number,
-		"classification": string,
-		"creator": string,
+		"query": string,
+		"order": string,
 		"limit": number,
 		"offset": number
 	};
 	app.post("/asteroid/search", async (req: any, reply: FastifyReply) => {
 
 		const request: FrontEndBodyRequest = req.body;
-		let asteroids = await app.db.asteroid.find({
-			relations: ["classification", "creator"],
-			where: {
-				full_name: Like(`%${request.full_name}%`),
-			},
-			take: request.limit,
-			skip: request.offset
-		});
-
+		// I <3 SQL. Using a query builder seemed to be less finicky than doing .find() 
+		let asteroids = await app.db.asteroid.createQueryBuilder("asteroids")
+			.select(["spkid",
+				"full_name",
+				"neo",
+				"pha",
+				"absmag",
+				"diameter",
+				"albedo",
+				"eccentricity",
+				"semimajor_axis",
+				"perihelion",
+				"inclination",
+				"asc_node_long",
+				"arg_periapsis",
+				"mean_anomaly",
+				"users.name",
+				"classifications.abbreviation"
+			])
+			.innerJoin("asteroids.creator", "users")
+			.innerJoin("asteroids.classification", "classifications")
+			.where(`asteroids.full_name LIKE '%${request.query}%'`)
+			.limit(request.limit)
+			.offset(request.offset)
+			.orderBy("asteroids.full_name", (request.order === 'ASC') ? 'ASC' : 'DESC')
+			.execute()
+			app.log.info(asteroids)
 		reply.send(asteroids);
 	});
 
