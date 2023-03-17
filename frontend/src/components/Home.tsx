@@ -8,6 +8,14 @@ import {AsteroidResponse, au, CelestialBody, degToRad, metersToUnits, minEntityR
 import { httpClient } from "../services/HttpService";
 import { ReactSearchAutocomplete } from 'react-search-autocomplete'
 import { Link, useNavigate } from "react-router-dom";
+import { Texture } from "three";
+
+// @ts-ignore
+const minioIP = import.meta.env.VITE_MINIO_IP;
+// @ts-ignore
+const minioPort = import.meta.env.VITE_MINIO_PORT;
+
+const minioUrl = `http://${minioIP}:${minioPort}`;
 
 export function Home()
 {
@@ -117,6 +125,7 @@ export type SolarSystemProp = {
 }
 
 export function SolarSystem({appendAsteroid, appendPlanet, assignSelected, planets, asteroids}: SolarSystemProp) {
+  const [sunTexture, setSunTexture] = useState<Texture>();
 
 	useEffect(() => {
 		console.log("Creating solar system in useEffect");
@@ -145,6 +154,14 @@ export function SolarSystem({appendAsteroid, appendPlanet, assignSelected, plane
 				appendAsteroid(newPlanetObject);
 			}
 		}
+    const fetchTexturePath = async() => {
+      let sunTexturePathResponse = await httpClient.get(`/asteroid/image/sun`);
+      const textureManager = new THREE.TextureLoader();
+      textureManager.setPath(minioUrl)
+      console.log(minioUrl + sunTexturePathResponse.data.urls[0])
+      setSunTexture(textureManager.load(sunTexturePathResponse.data.urls[0]));
+		};
+    fetchTexturePath().catch(console.error);
 	}, []);
 
 	// EntityComponent's `position` property is provided by react-three-fiber and newScale is ours
@@ -152,7 +169,7 @@ export function SolarSystem({appendAsteroid, appendPlanet, assignSelected, plane
 		<>
 			<mesh name="Sun">
         <sphereGeometry args={[Math.max(metersToUnits(695700000), minEntityRadius*10), 64, 32]}/>
-        <meshStandardMaterial {...useTexture({map: './src/img/textures/2k_sun.jpg'})}/>
+        <meshStandardMaterial  map={sunTexture}/>
       </mesh>
 			{planets == null ? null :
 				planets.map((entity) => {
@@ -179,39 +196,19 @@ function EntityComponent(props: EntityProps) {
 	// This reference will give us direct access to the mesh
 	const planetMesh = useRef<THREE.Mesh>(null!);
   const orbitLine = useRef<THREE.Line>(null!);
-  let texture = null;
-  switch (props.entity.name)
-  {
-    case "Mercury":
-      texture = useTexture({map: './src/img/textures/2k_mercury.jpg'});
-      break;
-    case "Venus":
-      texture = useTexture({map: './src/img/textures/2k_venus_atmosphere.jpg'});
-      break;
-    case "Earth":
-      texture = useTexture({map: './src/img/textures/2k_earth_daymap.jpg'});
-      break;
-    case "Mars":
-      texture = useTexture({map: './src/img/textures/2k_mars.jpg'});
-      break;
-    case "Jupiter":
-      texture = useTexture({map: './src/img/textures/2k_jupiter.jpg'});
-      break;
-    case "Saturn":
-      texture = useTexture({map: './src/img/textures/2k_saturn.jpg'});
-      break;
-    case "Uranus":
-      texture = useTexture({map: './src/img/textures/2k_uranus.jpg'});
-      break;
-    case "Neptune":
-      texture = useTexture({map: './src/img/textures/2k_neptune.jpg'});
-      break;
-    case "Pluto":
-      texture = useTexture({map: './src/img/textures/1k_pluto.jpg'});
-      break;
-    default:
-      break;
-  }
+  const [texture, setTexture] = useState<Texture>();
+
+  useEffect(() => {
+    const fetchTexturePath = async() => {
+      let dest = `/asteroid/image/${props.entity.name.toLowerCase()}`
+      let texturePath = await httpClient.get(dest);
+      const textureManager = new THREE.TextureLoader();
+      textureManager.setPath(minioUrl)
+      console.log(minioUrl + texturePath.data.urls[0])
+      setTexture(textureManager.load(texturePath.data.urls[0]));
+		};
+    fetchTexturePath().catch(console.error);
+  }, [])
 
 	let {entity, assignSelected} = props;
   let visualRadius = Math.max(metersToUnits(entity.diameter/2)*400000, minEntityRadius*2)
@@ -232,7 +229,7 @@ function EntityComponent(props: EntityProps) {
       visible={entity.isVisible}
     >
       {entity.type === CelestialBody.Planet ? <sphereGeometry args={[visualRadius, 64, 32]}/> : <icosahedronGeometry args={[visualRadius, 2]}/>}
-			<meshStandardMaterial {...texture} color={entity.type === CelestialBody.Planet ? 0xffffff : 0xff00ff}/>
+			<meshStandardMaterial map={texture} color={entity.type === CelestialBody.Planet ? 0xffffff : 0xff00ff}/>
 		</mesh>
     <Line 
       // ref={orbitLine}

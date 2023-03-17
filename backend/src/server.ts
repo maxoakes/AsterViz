@@ -10,8 +10,7 @@ import logger from "./lib/logger";
 import {asterviz_routes} from "./routes";
 import DbPlugin from "./plugins/database";
 import cors from "@fastify/cors";
-
-
+import multipart from '@fastify/multipart';
 
 /**
  * This is our main "Create App" function.  Note that it does NOT start the server, this only creates it
@@ -30,7 +29,7 @@ export async function buildApp(useLogging: boolean) {
 	try {
 		// add express-like 'app.use' middleware support
 		await app.register(fastifyMiddie);
-
+		await app.register(multipart);
 		await app.register(cors, {
 			origin: (origin, cb) => {
 				cb(null, true);

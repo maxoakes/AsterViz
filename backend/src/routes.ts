@@ -1,10 +1,9 @@
 /** @module Routes */
-import cors from "cors";
 import {FastifyInstance, FastifyReply, FastifyRequest, RouteShorthandOptions} from "fastify";
 import {User} from "./db/models/user";
 import {Classification} from "./db/models/classification";
 import {Asteroid} from "./db/models/asteroid";
-import {ILike, LessThan, Like, Not} from "typeorm";
+import { GetURLs } from "./lib/minio";
 
 /**
  * App plugin where we construct our routes
@@ -12,11 +11,6 @@ import {ILike, LessThan, Like, Not} from "typeorm";
  */
 export async function asterviz_routes(app: FastifyInstance): Promise<void> {
 
-	/**
-	 * Route listing asteroids given a name
-	 * @name get/asteroids
-	 * @function
-	 */
 	app.get("/asteroid/name/:string", async (req: any, reply) => {
 		const namePart = req.params.string;
 
@@ -84,5 +78,13 @@ export async function asterviz_routes(app: FastifyInstance): Promise<void> {
 			.execute()
 			app.log.info(asteroids)
 		reply.send(asteroids);
+	});
+
+	app.get("/asteroid/image/:string", async (req: any, reply: FastifyReply) => {
+		const fileName = req.params.string;
+
+		let urls = await GetURLs(fileName)
+		app.log.info(urls)
+		reply.send({urls});
 	});
 }

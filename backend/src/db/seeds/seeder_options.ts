@@ -3,6 +3,7 @@ import {UserSeed} from "./user_seeder";
 import {Seeder} from "../../lib/seed_manager";
 import { AsteroidSeed } from "./asteroid_seeder";
 import { ClassificationSeed } from "./classification_seeder";
+import { MinioSeed } from "./minio_seeder";
 
 export type SeederOptionsType = {
 	seeds: Array<Seeder>;
@@ -15,7 +16,8 @@ const SeederOptions: any = {
 	seeds: [
 		UserSeed,
 		ClassificationSeed,
-		AsteroidSeed
+		AsteroidSeed,
+		MinioSeed
 	]
 };
 

@@ -59,4 +59,6 @@ I cannot think of a microservice that I can build that will be meaningful and be
 By the time I submit this project, it will visibly be a half-complete project. I wish I had at least two more weeks to work on this.
 
 # March 16
-I found some free textures to apply to planets, so I now have content to use for the file storage requirement of this project.
+I found some free textures to apply to planets, so I now have content to use for the file storage requirement of this project. I also made a clean (and working) search funtion and table that displays asteroids from the database. I will keep this as is until I have time to make everything better. I still need to add the other project requirements
+
+# March 17
