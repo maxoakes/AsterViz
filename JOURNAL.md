@@ -72,3 +72,15 @@ I have added the Login functionality to the front end. This required getting all
 I now have file storage and logging in working, so the last requirement to create is the microservice. I am thinking about doing it with C# in ASP.NET.
 
 I got a basic GET route working in C# that is basically a Hello World API response. I now need to modify it to access my database do something remotely useful.
+
+I have encountered an issue where there is some "pre-handshake" failure when trying to get the service to connect to the database. I will continue looking at this tomorrow.
+
+# March 19
+
+I realized I could specify in my Google-searching that I am trying to connect to a PostgreSQL database, since all the results before were for Microsoft's SQL DBMS. I found that I needed a different package to access a PostgreSQL database (`Npgsql`). I plugged that in, and now everything is working great when using Postman.
+
+At first, I tried to have the front-end call that microservice route directly, but encountered CORS issues. I have two options to resolve this; allow CORS to the microservice, or route the call to the backend from the frontend, and have the backend return whatever the microservice says. I will go with the latter so that the frontend can stay consistent in its local API calling to backend tech.
+
+I now have a sentence on my database page component that says how many asteroids are in the database, and it is obtained by calling the backend, which calls the microservice; so I now have the microservice fully implemented as envisioned.
+
+I also realized that I should use auth0 as login authentication, so I will try to swap out the jwt implementation with that. After I do this, I will have completed all of the base requirements.
