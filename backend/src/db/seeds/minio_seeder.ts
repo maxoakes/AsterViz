@@ -3,11 +3,8 @@
 import fs from 'fs';
 import {Seeder} from "../../lib/seed_manager";
 import {FastifyInstance} from "fastify";
-import { UploadFileToMinio } from '../../lib/minio';
+import { deleteAllMinioFiles, UploadFileToMinio } from '../../lib/minio';
 
-/**
- * Seeds the ip_history table
- */
 export class MinioSeeder extends Seeder {
 
 	/**
@@ -19,6 +16,9 @@ export class MinioSeeder extends Seeder {
 	override async run(app: FastifyInstance) {
 		app.log.info("Seeding Planet Textures");
 		
+		// looks like we do not need to delete them before they are re-seeded. uploading a file overwrites any exisitng of the same file
+		// await deleteAllMinioFiles();
+
 		let dirname = "./src/db/seeds/textures/"
 		fs.readdir(dirname, function(err, filenames)
 		{

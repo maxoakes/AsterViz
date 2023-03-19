@@ -62,3 +62,13 @@ By the time I submit this project, it will visibly be a half-complete project. I
 I found some free textures to apply to planets, so I now have content to use for the file storage requirement of this project. I also made a clean (and working) search funtion and table that displays asteroids from the database. I will keep this as is until I have time to make everything better. I still need to add the other project requirements
 
 # March 17
+I have added Minio functionality; it is pretty different than Doggr. Rather than upload images, the frontend will only read images. Because of this, I had to seed the images. I did this like I did for the asteroids; add a seeder and read some files to add to the Minio database. Next, I had to make an interface to get files from Minio. I elected to get the public URL of the the images from the database, and return the URL in a JSON. So, I created a GET route that allows for a `name` parameter, and the route will return all the images with `name` as the prefix (since the route is being called in fixed locations for only planets, it will return only the planet's texture image in the array and nothing more).
+
+I am having an issue where only half the images load. The console is telling me that the routes are being called and replied to correctly. I am pretty sure that this is the fault of React-Three-Fiber, but I am not sure what issue is exactly. I tried to load the textures asynchronously and not, and neither worked. But, I got Minio working, so I will fix this issue later since it is not important to the requirements in the end.
+
+# March 18
+I have added the Login functionality to the front end. This required getting all the configs and routes set up on the backend. On the front end, there is now a log in and log out button that show up at the appropriate times, and I have a component that changes depending on if the client is logged in or not.
+
+I now have file storage and logging in working, so the last requirement to create is the microservice. I am thinking about doing it with C# in ASP.NET.
+
+I got a basic GET route working in C# that is basically a Hello World API response. I now need to modify it to access my database do something remotely useful.

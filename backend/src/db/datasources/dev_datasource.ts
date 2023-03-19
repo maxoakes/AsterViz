@@ -5,7 +5,7 @@ import { DataSource } from 'typeorm';
 import { User } from "../models/user";
 import { Classification } from "../models/classification";
 import { Asteroid } from "../models/asteroid";
-import { initialize1677551842732 } from "../migrations/1677551842732-initialize";
+import { initialize1679098318231 } from "../migrations/1679098318231-initialize";
 
 dotenv.config();
 
@@ -26,7 +26,7 @@ export const AppDataSource = new DataSource({
 		Classification
 	],
 	migrations: [
-		initialize1677551842732
+		initialize1679098318231
 	],
 	// DANGER DANGER our convenience will nuke production data!
 	synchronize: false

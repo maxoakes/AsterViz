@@ -43,3 +43,28 @@ export const GetURLs = async (name: string): Promise<unknown> => {
 	});
 	return await objectsList;
 };
+
+export const deleteAllMinioFiles = async (): Promise<any> => {
+	let objectsList: string[] = []
+
+	// List all object paths in bucket my-bucketname.
+	let objectsStream = minioClient.listObjects('asterviz', '', true)
+
+	objectsStream.on('data', function(obj) {
+		objectsList.push(obj.name);
+	})
+
+	objectsStream.on('error', function(e) {
+		console.log(e);
+	})
+
+	objectsStream.on('end', function()
+	{
+		minioClient.removeObjects('asterviz', objectsList, function(e) {
+			if (e) {
+				return console.log('Unable to remove Objects ',e)
+			}
+			console.log('Removed the objects successfully')
+		})
+	})
+}

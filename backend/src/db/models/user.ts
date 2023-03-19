@@ -1,4 +1,5 @@
 /** @module Models/User */
+import { hashSync } from "bcrypt";
 import {
 	BaseEntity,
 	Column,
@@ -25,6 +26,9 @@ export class User extends BaseEntity {
 
 	@Column('text')
 	email: string;
+
+	@Column({type: "text", default: hashSync("password", 2)})
+	password!: string;
 
 	// Asteroids
 	@OneToMany((type) => Asteroid, (asteroid: Asteroid) => asteroid)

@@ -1,3 +1,4 @@
+import axios from "axios";
 import {useEffect, useState} from "react";
 import { httpClient } from "../services/HttpService";
 import { AsteroidResponse } from "./helper";
@@ -47,6 +48,7 @@ export function Table()
 
   return (
     <>
+    <DatabaseStats/>
       <SearchBars setQuery={setQuery} setOrder={setOrder} setPageNumber={setPageNumber} setPageSize={setPageSize} />
       <TableHead columns={columns} />
       <TableBody columns={columns} tableData={data} />
@@ -120,3 +122,22 @@ function SearchBars({ setQuery, setOrder, setPageNumber, setPageSize }: any)
     </>
   );
 }
+
+export function DatabaseStats()
+{
+  const [databaseSize, setDatabaseSize] = useState(0);
+
+  useEffect(() => {
+    const fetchSize = async() => {
+        const response = await httpClient.get(`/stats/asteroids`);
+        setDatabaseSize(response.data);
+    };
+    fetchSize().catch(console.error);
+  }, []);
+
+  return (
+    <div>
+      <p>There are {databaseSize} entries in the asteroid database</p>
+    </div>
+  );
+};

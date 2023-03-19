@@ -4,6 +4,15 @@ import {User} from "./db/models/user";
 import {Classification} from "./db/models/classification";
 import {Asteroid} from "./db/models/asteroid";
 import { GetURLs } from "./lib/minio";
+import {compare, hashSync} from "bcrypt";
+import axios from "axios";
+
+// @ts-ignore
+const microIP = import.meta.env.VITE_CSMS_IP;
+// @ts-ignore
+const microPort = import.meta.env.VITE_CSMS_PORT;
+
+const microUrl = `http://${microIP}:${microPort}`;
 
 /**
  * App plugin where we construct our routes
@@ -86,5 +95,72 @@ export async function asterviz_routes(app: FastifyInstance): Promise<void> {
 		let urls = await GetURLs(fileName)
 		app.log.info(urls)
 		reply.send({urls});
+	});
+
+	app.get("/stats/asteroids", async (req: any, reply: FastifyReply) => {
+
+		// a call from the backend to call a microservice. brilliant
+		let stats = await axios.get(`${microUrl}/AsteroidStats`)
+		reply.send(stats.data.asteroidCount);
+	});
+
+	type CreateUserRequest = {
+		name: string,
+		email: string,
+		password: string
+	};
+	app.post("/users", async (req: any, reply: FastifyReply) => {
+
+		const request: CreateUserRequest = req.body;
+		let password: string = request.password;
+
+		// if we're in dev mode and pw isn't already bcrypt encrypted, do so now for convenience
+		if (import.meta.env.DEV) {
+			if (!request.password.startsWith("$2a$")) {
+				password = hashSync(password, 2);
+			}
+		}
+
+		const user = new User();
+		user.name = request.name;
+		user.email = request.email;
+		user.password = password;
+		user.save();
+
+		await reply.send(JSON.stringify({user}));
+	});
+	
+	type LoginRequest = {
+		email: string,
+		password: string
+	};
+	app.post("/login", async (req: any, reply: FastifyReply) => {
+
+		try {
+			const request: LoginRequest = req.body;
+
+			let theUser = await app.db.user.findOneOrFail({
+				where: {
+					email: request.email
+				}
+			});
+
+			const hashCompare = await compare(request.password, theUser.password);
+
+			if (hashCompare) {
+				// User has authenticated successfully!
+				const token = app.jwt.sign({id: theUser.id});
+				// const token = app.jwt.sign({email, id: theUser.id});
+				await reply.send({token});
+			} else {
+				app.log.info("Password validation failed");
+				await reply.status(401)
+					.send("Incorrect Password");
+			}
+		} catch (err) {
+			app.log.error(err);
+			await reply.status(500)
+				.send("Error: " + err);
+		}
 	});
 }
