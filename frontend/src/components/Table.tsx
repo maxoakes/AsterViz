@@ -40,7 +40,6 @@ export function Table()
     const fetchAsteroids = async() => {
         console.log(request)
         const response = await httpClient.post(`/asteroid/search`, request);
-        console.log(response.data)
         setData(response.data);
     };
     fetchAsteroids().catch(console.error);
@@ -48,10 +47,12 @@ export function Table()
 
   return (
     <>
-    <DatabaseStats/>
+      <DatabaseStats/>
       <SearchBars setQuery={setQuery} setOrder={setOrder} setPageNumber={setPageNumber} setPageSize={setPageSize} />
-      <TableHead columns={columns} />
-      <TableBody columns={columns} tableData={data} />
+      <table>
+        <TableHead columns={columns} />
+        <TableBody columns={columns} tableData={data} />
+      </table>
     </>
   )
 }

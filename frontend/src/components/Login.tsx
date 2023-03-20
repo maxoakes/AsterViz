@@ -2,6 +2,7 @@ import {useCallback, useContext, useEffect, useState} from "react";
 import React from "react";
 import {AuthContext, useAuth} from "../services/AuthService";
 import {useNavigate} from "react-router-dom";
+import { Auth0Provider, useAuth0 } from "@auth0/auth0-react";
 
 export function Login() {
 

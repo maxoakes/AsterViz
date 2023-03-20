@@ -84,3 +84,13 @@ At first, I tried to have the front-end call that microservice route directly, b
 I now have a sentence on my database page component that says how many asteroids are in the database, and it is obtained by calling the backend, which calls the microservice; so I now have the microservice fully implemented as envisioned.
 
 I also realized that I should use auth0 as login authentication, so I will try to swap out the jwt implementation with that. After I do this, I will have completed all of the base requirements.
+
+I have created an auth0 account and added the login module to my frontend, but that is as far as I have gotten, I have been stuck for most of the day with varying issues. After I log in, my front end does not indicate that I am logged in, and the auth0 hooks are not returning information back to me that I am authenticated, and I have no idea how to proceed, as I do not know where the issue is.
+
+I think I have narrowed down that I need an ID token after logging in, but after logging in, nothing specific to the user is sent back to the client as far as I can tell, so I simply have no idea what to do.
+
+# March 20
+
+I am completely lost as to what to do. In fact, I am not sure what am even looking for. On my front end, I am able to get a user's meta data when they are logged in. On the backend, I am not sure what needs to be done. I suppose I need some type of use for users who are logged in. I will create an endpoint that could be used to add an asteroid to the database; that requires a user to be associated with it, so that would require a log in.
+
+I found the function call to get the auth0 id token (of the user I hope) from the front end, and am able to send it to the backend via the Bearer authorization header. Now I need to authenticate the user on the backend to get their info, I think

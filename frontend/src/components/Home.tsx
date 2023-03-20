@@ -9,13 +9,7 @@ import { httpClient } from "../services/HttpService";
 import { ReactSearchAutocomplete } from 'react-search-autocomplete'
 import { Link, useNavigate } from "react-router-dom";
 import { Texture } from "three";
-
-// @ts-ignore
-const minioIP = import.meta.env.VITE_MINIO_IP;
-// @ts-ignore
-const minioPort = import.meta.env.VITE_MINIO_PORT;
-
-const minioUrl = `http://${minioIP}:${minioPort}`;
+import { minioUrl } from "../App";
 
 export function Home()
 {

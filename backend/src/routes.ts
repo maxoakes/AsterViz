@@ -1,5 +1,5 @@
 /** @module Routes */
-import {FastifyInstance, FastifyReply, FastifyRequest, RouteShorthandOptions} from "fastify";
+import fastify, {FastifyInstance, FastifyReply, FastifyRequest, RouteShorthandOptions} from "fastify";
 import {User} from "./db/models/user";
 import {Classification} from "./db/models/classification";
 import {Asteroid} from "./db/models/asteroid";
@@ -7,12 +7,17 @@ import { GetURLs } from "./lib/minio";
 import {compare, hashSync} from "bcrypt";
 import axios from "axios";
 
-// @ts-ignore
-const microIP = import.meta.env.VITE_CSMS_IP;
-// @ts-ignore
-const microPort = import.meta.env.VITE_CSMS_PORT;
-
-const microUrl = `http://${microIP}:${microPort}`;
+export const auth0Domain = import.meta.env.VITE_AUTH0_DOMAIN;
+export const auth0ClientID = import.meta.env.VITE_AUTH0_CLIENT_ID;
+export const auth0ClientSecret = import.meta.env.VITE_AUTH0_CLIENT_SECRET;
+export const auth0Audience = import.meta.env.VITE_AUTH0_AUDIENCE;
+export const auth0manageToken = import.meta.env.VITE_AUTH0_MANAGE_TOKEN;
+export const minioIP = import.meta.env.VITE_MINIO_IP;
+export const minioPort = import.meta.env.VITE_MINIO_PORT;
+export const minioUrl = `http://${import.meta.env.VITE_MINIO_IP}:${import.meta.env.VITE_MINIO_PORT}`;
+export const microIP = import.meta.env.VITE_CSMS_IP;
+export const microPort = import.meta.env.VITE_CSMS_PORT;
+export const microUrl = `http://${microIP}:${microPort}`;
 
 /**
  * App plugin where we construct our routes
@@ -46,7 +51,7 @@ export async function asterviz_routes(app: FastifyInstance): Promise<void> {
 			.where(`LOWER(asteroids.full_name) LIKE LOWER('%${namePart}%')`)
 			.limit(20)
 			.execute()
-			app.log.info(asteroids)
+			// app.log.info(asteroids)
 		reply.send(asteroids);
 	});
 
@@ -85,7 +90,7 @@ export async function asterviz_routes(app: FastifyInstance): Promise<void> {
 			.offset(request.offset)
 			.orderBy("asteroids.full_name", (request.order === 'ASC') ? 'ASC' : 'DESC')
 			.execute()
-			app.log.info(asteroids)
+			// app.log.info(asteroids)
 		reply.send(asteroids);
 	});
 
@@ -93,7 +98,7 @@ export async function asterviz_routes(app: FastifyInstance): Promise<void> {
 		const fileName = req.params.string;
 
 		let urls = await GetURLs(fileName)
-		app.log.info(urls)
+		// app.log.info(urls)
 		reply.send({urls});
 	});
 
@@ -162,5 +167,91 @@ export async function asterviz_routes(app: FastifyInstance): Promise<void> {
 			await reply.status(500)
 				.send("Error: " + err);
 		}
+	});
+	// a test
+	app.post("/verify", {preValidation: app.authenticate}, async (req: any, reply: FastifyReply) => {
+		const response = await app.inject({
+			url: '/',
+			headers: {
+			  Authorization: `Bearer test`
+			}
+		})
+		app.log.info(response)
+		reply.send(JSON.stringify(response))
+	});
+	
+	// create an asteroid using auth0 creds?
+	type AsteroidCreationRequest = {
+		// id: number // created automatically
+		// spkid: string, //created automatically
+		// full_name: string, //calculated automatically 
+		fancy_name: string,
+		pdes: string
+		// neo: boolean, //calculated automatically
+		// pha: boolean, //calculated automatically
+		absmag: number,
+		diameter: number
+		albedo: number,
+		eccentricity: number,
+		semimajor_axis: number,
+		perihelion: number,
+		inclination: number,
+		asc_node_long: number,
+		arg_periapsis: number,
+		mean_anomaly: number,
+		// created_at: number, //created automatically
+		// classificationId: number, //calculated automatically
+		// creatorId: number //created automatically with auth from req
+	};
+	app.post("/asteroid/create", {preValidation: app.authenticate}, async (req: any, reply: FastifyReply) => {
+
+		const decoded = req.user;
+		app.log.info(req.decoded)
+		let response = await axios.get('https://dev-msr1bjuppruzjysb.us.auth0.com/api/v2/users', {
+			params: {q: `user_id:"${decoded.sub}"`, search_engine: 'v3'},
+			headers: {authorization: `Bearer ${auth0manageToken}`}
+		})
+		app.log.info(response.data)
+		let requesterEmail = response.data.email
+		// else
+		// {
+		// 	reply.status(500).send("User not found in Auth0 database. How did we get here?!");
+		// 	return
+		// }
+
+		// const authorization: string = req.headers.authorization;
+		// let token = authorization.split(" ")[1]
+		// app.log.info(token)
+		const request: AsteroidCreationRequest = req.body;
+		const newAsteroid = new Asteroid()
+		newAsteroid.pdes = request.pdes
+		newAsteroid.spkid = `x${request.pdes}`
+		newAsteroid.diameter = request.diameter
+		newAsteroid.fancy_name = newAsteroid.fancy_name,
+		newAsteroid.full_name = `${request.pdes} ${request.fancy_name}`
+		newAsteroid.neo = false //placeholder because I dont want to do the math right now
+		newAsteroid.pha = false //placeholder because I dont want to do the math right now
+		newAsteroid.absmag = request.absmag
+		newAsteroid.albedo = request.albedo
+		newAsteroid.diameter = request.diameter
+		newAsteroid.eccentricity = request.eccentricity
+		newAsteroid.semimajor_axis = request.semimajor_axis
+		newAsteroid.perihelion = request.perihelion
+		newAsteroid.inclination = request.inclination
+		newAsteroid.asc_node_long = request.asc_node_long
+		newAsteroid.arg_periapsis = request.arg_periapsis
+		newAsteroid.mean_anomaly = request.mean_anomaly
+		newAsteroid.classification = await Classification.findOneOrFail({
+			where: {
+				id: 1
+			}
+		});
+		newAsteroid.creator = await User.findOneOrFail({
+			where: {
+				email: requesterEmail
+			}
+		});
+
+		reply.send(newAsteroid);
 	});
 }

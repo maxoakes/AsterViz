@@ -9,7 +9,7 @@ import {getDirName} from "./lib/helpers";
 import logger from "./lib/logger";
 import {asterviz_routes} from "./routes";
 import DbPlugin from "./plugins/database";
-import {AuthPlugin} from "./plugins/auth";
+import {AuthPlugin} from "./plugins/auth0";
 import cors from "@fastify/cors";
 
 /**
