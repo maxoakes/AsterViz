@@ -119,4 +119,10 @@ I believe I am now done with all of the requirements. I will now try to set up d
 
 I have setup a virtual box VM of the most recent Ubuntu LTS and installed docker. After some docs writing, I cloned my repo and use `docker compose up`. It appears to have composes correctly and I can access it (on localhost:5000 rather than on port 80). However, it appears that the backend is throwing errors in regards to TypeORM and the Relation class, and I think that is causing my backend to crash, since I cannot access anything from there; only the frontend.
 
-Once that is all working and running/setting up on a clean VM, I will go back and make the front end site look pretty with better CSS and organization, then clean up code, then add functionality if I have time. I still have to write a paper for a different class before the end of the week...
+Another issue I encountered was that Typeorm was throwing errors. Turns out it is a known bug on build, so I had to change all instances of a typeorm object to TypeORM.<object>.
+
+Another issue is that I need to migrate and seed the database on docker compose, but now there is an issue where the migration json is not being found, despite it being right there in the same directory that docker is working in.
+
+Tuesday end-of-day is my cut off for working on this project, as I still have to write a paper in another course.
+
+# March 21

@@ -63,7 +63,7 @@ you ONLY do the above!
     * cp routeCS/MyRoute/.env.example routeCS/MyRoute/.env
 * Or:
     * chmod +x ./env.sh
-    * sudo ./env.sh
+    * ./env.sh
 * Finally:
     * docker compose up
 
