@@ -71,8 +71,8 @@ services:
       - VITE_AUTH0_CLIENT_SECRET="RSQF9oM4zFVLIE30dmpMOk7judz0sA2kjDJgO_0ey47vFcdHd5wBOC7RaHNJutVb"
       - VITE_AUTH0_AUDIENCE="https://dev-msr1bjuppruzjysb.us.auth0.com/api/v2/"
 
-  routeCS:
-    container_name: routeCS
+  routecs:
+    container_name: routecs
     build: ./routeCS/MyRoute
     restart: always
     ports:

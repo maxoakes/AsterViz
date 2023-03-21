@@ -62,4 +62,5 @@ you ONLY do the above!
     * cp backend/.env.example backend/.env
     * cp routeCS/MyRoute/.env.example routeCS/MyRoute/.env
 * Or:
-    * ./env.sh
+    * chmod +x ./env.sh
+    * sudo ./env.sh
