@@ -20,6 +20,18 @@ export class MinioSeeder extends Seeder {
 		// await deleteAllMinioFiles();
 
 		let dirname = "./src/db/seeds/textures/"
+		let links = [
+			"http://www.solarsystemscope.com/textures/download/2k_mercury.jpg",
+			"http://www.solarsystemscope.com/textures/download/2k_venus_atmosphere.jpg",
+			"http://www.solarsystemscope.com/textures/download/2k_mars.jpg",
+			"http://www.solarsystemscope.com/textures/download/2k_jupiter.jpg",
+			"http://www.solarsystemscope.com/textures/download/2k_saturn.jpg",
+			"http://www.solarsystemscope.com/textures/download/2k_uranus.jpg",
+			"http://www.solarsystemscope.com/textures/download/2k_neptune.jpg",
+			"http://www.solarsystemscope.com/textures/download/2k_earth_daymap.jpg",
+			"http://www.solarsystemscope.com/textures/download/2k_sun.jpg",
+			"http://static.wikia.nocookie.net/planet-texture-maps/images/6/64/Pluto_Made.png",
+		];
 		fs.readdir(dirname, function(err, filenames)
 		{
 			filenames.forEach(function(filename)

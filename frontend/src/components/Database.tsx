@@ -14,8 +14,8 @@ export function Database() {
 	return (
 		<div className="page-container">
 			<div className="back-button" onClick={() => navigate('/')}>
-				<img src="./src/img/back128.png" className="button-icon"/>
-				<img src="./src/img/aster128.png" className="button-icon"/>
+				<img src="https://i.imgur.com/URZjUwO.png" className="button-icon"/>
+				<img src="https://i.imgur.com/2xlZt2X.png" className="button-icon"/>
 			</div>
 			<div className="title-banner"><h3 className="text-center">Database Search</h3></div>
 			<div className="login-button">

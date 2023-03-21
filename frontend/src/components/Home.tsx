@@ -300,7 +300,7 @@ export function SidePanel(props: SidePanelProp)
   const entityChecklist = allEntities.map(item => 
     <div className="entity-list-item" key={item.name}>
       <input type={"checkbox"} name={`${item.name}-toggle`} onClick={() => toggle(item)} checked={item.isVisible} onChange={(e => {})}/>
-      {(item.type == CelestialBody.Asteroid) ? <button type="button" onClick={() => trash(item)} className="inline-entity-button"><img src="./src/img/trash128.png"/></button> : <></>}
+      {(item.type == CelestialBody.Asteroid) ? <button type="button" onClick={() => trash(item)} className="inline-entity-button"><img src="https://i.imgur.com/MzzuH05.png"/></button> : <></>}
       <label htmlFor={`${item.name}-toggle`}>{item.name}</label>
       
     </div>
@@ -318,10 +318,10 @@ export function SidePanel(props: SidePanelProp)
 				</div>
 			</div>
 			<button className="side-window-button first-button" onClick={() => setIsOpen(current => !current)}>
-        <img src="./src/img/aster128.png" className="button-icon"/>
+        <img src="https://i.imgur.com/2xlZt2X.png" className="button-icon"/>
       </button>
       <button className="side-window-button second-button" onClick={() => navigate('/database')}>
-        <img src="./src/img/db128.png" className="button-icon"/>
+        <img src="https://i.imgur.com/IZV8EQo.png" className="button-icon"/>
       </button>
 		</>
 	)
