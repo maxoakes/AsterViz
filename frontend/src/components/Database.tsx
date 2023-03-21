@@ -36,7 +36,42 @@ export function Database() {
 
 export function CreateAsteroidForm()
 {
-	const { user, isAuthenticated, isLoading } = useAuth0();
+	const { user, isAuthenticated, isLoading, getAccessTokenSilently, getIdTokenClaims } = useAuth0();
+
+	function handleClick()
+	{
+		const createAsteroid = async () => {
+		try {
+			const claims = await getIdTokenClaims();
+			// console.log(claims)
+
+			// TODO: make a form to fill this in with user-selected stuff
+			let res = await httpClient.post("/asteroid/create", 
+			{
+				fancy_name: "Test",
+				pdes: "4",
+				absmag: 0.5,
+				diameter: 30,
+				albedo: 0.2,
+				eccentricity: 0.1,
+				semimajor_axis: 1.0,
+				perihelion: 1.0,
+				inclination: 5.0,
+				asc_node_long: 0.0,
+				arg_periapsis: 0.0,
+				mean_anomaly: 0.0,
+			},
+			{
+				headers: {
+				Authorization: `Bearer ${claims.__raw}`,
+			}});
+			await console.log(res.data)
+		} catch (e) {
+			console.warn(e.message);
+		}
+		};
+		createAsteroid();
+	}
 
 	if (isLoading) {
 		return <div>Loading ...</div>;
@@ -44,8 +79,13 @@ export function CreateAsteroidForm()
 
 	return (
 		isAuthenticated ?
-			<p className="text-center text-warning">You are logged in. Create an asteroid here. Not implemented</p> : 
-			<p className="text-center text-danger">Log in to create an asteroid</p>
+		<>
+			<p className="text-center text-warning">You are logged in. Create an asteroid here. !Not fully implemented!</p>
+			<button onClick={handleClick}>
+				Create Asteroid. (See logs, it is not actually created)
+			</button>
+		</>
+		: <p className="text-center text-danger">Log in to create an asteroid</p>
 	);
 }
 
@@ -72,47 +112,12 @@ export function AccountPanel()
 			});
 			const user_metadata  = await metadataResponse.data;
 			setUserMetadata(user_metadata);
-
-			const claims = await getIdTokenClaims();
-			console.log(claims)
-			setIdToken(claims.__raw)
-
-			let res = await httpClient.post("/asteroid/create", 
-			{
-				fancy_name: "Test",
-				pdes: "4",
-				absmag: 0.5,
-				diameter: 30,
-				albedo: 0.2,
-				eccentricity: 0.1,
-				semimajor_axis: 1.0,
-				perihelion: 1.0,
-				inclination: 5.0,
-				asc_node_long: 0.0,
-				arg_periapsis: 0.0,
-				mean_anomaly: 0.0,
-			},
-			{
-				headers: {
-				Authorization: `Bearer ${claims.__raw}`,
-			}});
-			await console.log(res.data)
-			
-
 		  } catch (e) {
 			console.warn(e.message);
 		  }
 		};
 		getUserMetadata();
 	  }, [getAccessTokenSilently, user?.sub]);
-
-	  useEffect(() => {
-		console.log(userMetadata)
-	  }, [userMetadata])
-
-	  useEffect(() => {
-		console.log(idToken)
-	  }, [idToken])
 
 	  if (isLoading)
 	  {

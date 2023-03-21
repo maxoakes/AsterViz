@@ -94,3 +94,23 @@ I think I have narrowed down that I need an ID token after logging in, but after
 I am completely lost as to what to do. In fact, I am not sure what am even looking for. On my front end, I am able to get a user's meta data when they are logged in. On the backend, I am not sure what needs to be done. I suppose I need some type of use for users who are logged in. I will create an endpoint that could be used to add an asteroid to the database; that requires a user to be associated with it, so that would require a log in.
 
 I found the function call to get the auth0 id token (of the user I hope) from the front end, and am able to send it to the backend via the Bearer authorization header. Now I need to authenticate the user on the backend to get their info, I think
+
+I think I have implemented auth0 in the correct way. To quote what I proposed in Discord, this is how auth0 works in the project
+* User logs into auth0, so the user has an account in the auth0 DB of our project (but not necessarily in our own backend DB)
+* Frontend gets back tokens, including the "ID Token" that has their auth0 profile encoded in it
+* For whatever API call that requires a logged in user, the frontend would send a request with an authentication header containing the ID token that we got from auth0, plus a body of whatever
+* The backend would verify that the token is good
+
+Then, to get the user information from that sent ID token on the backend:
+* The backend will userID from the auth header, then send an API call to auth0 via the management API to get the full user meta data
+
+I did this all within a half-implemented 'create asteroid' function. The user would enter in data and send to it the backend and that would get added to the database.
+
+It all appears to be working because:
+* An access token gets sent with the request to create an asteroid
+* The backend gets the ID token and gets the auth0 userID
+* The backend searches its own user database for the user with that same email
+* the backend creates the specified asteroid with the user in its own user database, using the user info from the auth0 user
+
+I will also need to add a part were a user is created in the backend if one exists for auth0, but not the backend.
+I will also want to remove the password part of the user database, as that is not needed. That table will now basically be an association table between a Display name and an auth0 account.

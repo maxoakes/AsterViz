@@ -19,7 +19,7 @@ export class UserSeeder extends Seeder {
 
 		let user = new User();
 		user.name = "Universe";
-		user.email = "maxoakes@pdx.edu";
+		user.email = "m.oakes017@gmail.com";
 		await user.save();
 		app.log.info("\tSeeded Universe user");
 	}
