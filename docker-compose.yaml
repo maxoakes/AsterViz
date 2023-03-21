@@ -73,7 +73,7 @@ services:
 
   routecs:
     container_name: routecs
-    build: ./routeCS/MyRoute
+    build: ./routeCS/MyRoute/
     restart: always
     ports:
       - "5203:5203"
