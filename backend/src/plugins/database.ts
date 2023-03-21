@@ -1,7 +1,7 @@
 /** @module DatabasePlugin */
 import "reflect-metadata";
 import fp from "fastify-plugin";
-import {DataSource, Repository} from "typeorm";
+import TypeORM from "typeorm";
 import {User} from "../db/models/user";
 import {FastifyInstance, FastifyPluginOptions} from "fastify";
 import { AppDataSource } from "../db/datasources/dev_datasource";
@@ -24,10 +24,10 @@ declare module 'fastify' {
 }
 
 interface DBConfigOpts {
-	user: Repository<User>,
-	classification: Repository<Classification>
-	asteroid: Repository<Asteroid>,
-	connection: DataSource,
+	user: TypeORM.Repository<User>,
+	classification: TypeORM.Repository<Classification>
+	asteroid: TypeORM.Repository<Asteroid>,
+	connection: TypeORM.DataSource,
 }
 
 /**

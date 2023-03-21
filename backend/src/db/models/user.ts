@@ -1,39 +1,30 @@
 /** @module Models/User */
 import { hashSync } from "bcrypt";
-import {
-	BaseEntity,
-	Column,
-	CreateDateColumn,
-	Entity,
-	OneToMany,
-	PrimaryGeneratedColumn,
-	Relation,
-	UpdateDateColumn
-} from "typeorm";
+import TypeORM from "typeorm";
 
 import {Asteroid} from "./asteroid";
 
 /**
  *  Class representing user table
  */
-@Entity({name: "users"})
-export class User extends BaseEntity {
-	@PrimaryGeneratedColumn()
+@TypeORM.Entity({name: "users"})
+export class User extends TypeORM.BaseEntity {
+	@TypeORM.PrimaryGeneratedColumn()
 	id: number;
 
-	@Column()
+	@TypeORM.Column()
 	name: string;
 
-	@Column('text')
+	@TypeORM.Column('text')
 	email: string;
 
 	// Asteroids
-	@OneToMany((type) => Asteroid, (asteroid: Asteroid) => asteroid)
-	asteroids: Relation<Asteroid[]>;
+	@TypeORM.OneToMany((type) => Asteroid, (asteroid: Asteroid) => asteroid)
+	asteroids: TypeORM.Relation<Asteroid[]>;
 
-	@CreateDateColumn()
+	@TypeORM.CreateDateColumn()
 	created_at: string;
 
-	@UpdateDateColumn()
+	@TypeORM.UpdateDateColumn()
 	updated_at: string;
 }

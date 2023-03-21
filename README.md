@@ -64,3 +64,11 @@ you ONLY do the above!
 * Or:
     * chmod +x ./env.sh
     * sudo ./env.sh
+* Finally:
+    * docker compose up
+
+### Cleanup
+To fully wipe all images
+* docker stop $(docker ps -a -q)
+* docker rm $(docker ps -a -q)
+* docker rmi $(docker images -q)

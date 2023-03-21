@@ -1,101 +1,92 @@
 /** @module Models/Asteroid */
-import {
-	BaseEntity,
-	Column,
-	CreateDateColumn,
-	Entity, JoinTable,
-	ManyToMany,
-	ManyToOne,
-	PrimaryGeneratedColumn,
-	Relation
-} from "typeorm";
+import TypeORM from "typeorm";
 import { User } from "./user";
 import { Classification } from "./classification";
 
-@Entity({name: "asteroids"})
-export class Asteroid extends BaseEntity {
-	@PrimaryGeneratedColumn()
+@TypeORM.Entity({name: "asteroids"})
+export class Asteroid extends TypeORM.BaseEntity {
+	@TypeORM.PrimaryGeneratedColumn()
 	id: number;
 
 	//SPK-ID
-	@Column()
+	@TypeORM.Column()
 	spkid: string;
 
 	//Object full name/designation
-	@Column()
+	@TypeORM.Column()
 	full_name: string;
 
 	//Object IAU name
-	@Column()
+	@TypeORM.Column()
 	fancy_name: string;
 
 	// Object primary designation
-	@Column()
+	@TypeORM.Column()
 	pdes: string;
 
 	// Is near-Earth Object
-	@Column()
+	@TypeORM.Column()
 	neo: Boolean;
 
 	// Is potentially hazardous object
-	@Column()
+	@TypeORM.Column()
 	pha: Boolean;
 
 	// Absolute Magnitude
-	@Column("float", {nullable: true})
+	@TypeORM.Column("float", {nullable: true})
 	absmag: Number | null;
 
 	// Diameter (km)
-	@Column("float")
+	@TypeORM.Column("float")
 	diameter: Number;
 
 	// Albedo
-	@Column("float", {nullable: true})
+	@TypeORM.Column("float", {nullable: true})
 	albedo: Number | null;
 
-	@Column("float")
+	@TypeORM.Column("float")
 	eccentricity: Number;
 
 	// Semi Major-axis (AU)
-	@Column("float")
+	@TypeORM.Column("float")
 	semimajor_axis: Number;
 
 	// Perihelion (AU)
-	@Column("float")
+	@TypeORM.Column("float")
 	perihelion: Number;
 
 	// Inclination (deg)
-	@Column("float")
+	@TypeORM.Column("float")
 	inclination: Number;
 
 	// Ascending Node Longitude
-	@Column("float")
+	@TypeORM.Column("float")
 	asc_node_long: Number;
 
 	// Arg of Periapsis (deg)
-	@Column("float")
+	@TypeORM.Column("float")
 	arg_periapsis: Number;
 
 	// Mean Anomaly (deg)
-	@Column("float")
+	@TypeORM.Column("float")
 	mean_anomaly: Number;
 
-	@ManyToOne((type) => Classification, (classification: Classification) => classification, {
+	@TypeORM.ManyToOne((type) => Classification, (classification: Classification) => classification, {
 		//adding an IPHistory will also add associated User if it is new, somewhat useless in this example
 		cascade: true,
 		// if we delete a User, also delete their IP History
 		onDelete: "CASCADE"
 	})
-	classification: Relation<Classification>;
+	classification: TypeORM.Relation<Classification>;
 
-	@ManyToOne((type) => User, (user: User) => user, {
+	@TypeORM.ManyToOne((type) => User, (user: User) => user, {
 		//adding an IPHistory will also add associated User if it is new, somewhat useless in this example
 		cascade: true,
 		// if we delete a User, also delete their IP History
 		onDelete: "CASCADE"
 	})
-	creator: Relation<User>;
+	creator: TypeORM.Relation<User>;
 
-	@CreateDateColumn()
+	@TypeORM.CreateDateColumn()
 	created_at: string;
 }

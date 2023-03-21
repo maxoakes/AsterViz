@@ -115,4 +115,8 @@ It all appears to be working because:
 I will also need to add a part were a user is created in the backend if one exists for auth0, but not the backend.
 I will also want to remove the password part of the user database, as that is not needed. That table will now basically be an association table between a Display name and an auth0 account.
 
-I believe I am now done with all of the requirements. I will now try to set up docker composition. Once that is all working and running/setting up on a clean VM, I will go back and make the front end site look pretty with better CSS and organization, then clean up code, then add functionality if I have time. I still have to write a paper for a different class before the end of the week...
+I believe I am now done with all of the requirements. I will now try to set up docker composition. 
+
+I have setup a virtual box VM of the most recent Ubuntu LTS and installed docker. After some docs writing, I cloned my repo and use `docker compose up`. It appears to have composes correctly and I can access it (on localhost:5000 rather than on port 80). However, it appears that the backend is throwing errors in regards to TypeORM and the Relation class, and I think that is causing my backend to crash, since I cannot access anything from there; only the frontend.
+
+Once that is all working and running/setting up on a clean VM, I will go back and make the front end site look pretty with better CSS and organization, then clean up code, then add functionality if I have time. I still have to write a paper for a different class before the end of the week...
