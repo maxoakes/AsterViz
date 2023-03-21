@@ -114,3 +114,5 @@ It all appears to be working because:
 
 I will also need to add a part were a user is created in the backend if one exists for auth0, but not the backend.
 I will also want to remove the password part of the user database, as that is not needed. That table will now basically be an association table between a Display name and an auth0 account.
+
+I believe I am now done with all of the requirements. I will now try to set up docker composition. Once that is all working and running/setting up on a clean VM, I will go back and make the front end site look pretty with better CSS and organization, then clean up code, then add functionality if I have time. I still have to write a paper for a different class before the end of the week...
