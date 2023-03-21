@@ -6,7 +6,7 @@ import {Asteroid} from "./db/models/asteroid";
 import { GetURLs } from "./lib/minio";
 import {compare, hashSync} from "bcrypt";
 import axios from "axios";
-import { Like } from "typeorm";
+import TypeORM from "typeorm";
 
 export const auth0Domain = import.meta.env.VITE_AUTH0_DOMAIN;
 export const auth0ClientID = import.meta.env.VITE_AUTH0_CLIENT_ID;
@@ -171,7 +171,7 @@ export async function asterviz_routes(app: FastifyInstance): Promise<void> {
 			});
 			let creators = await User.find({
 				where: {
-					email: Like(requesterEmail)
+					email: TypeORM.Like(requesterEmail)
 				}
 			});
 			if (creators.length === 0)
