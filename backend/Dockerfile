@@ -36,15 +36,14 @@ COPY --chown=nodejs:nodejs package*.json ./
 # install dependencies here, for better reuse of layers
 # RUN pnpm install
 
-# seeds!
-# RUN pnpm migration:run
-# RUN pnpm seed
-
 # copy all sources in the container (exclusions in .dockerignore file)
 COPY --chown=nodejs:nodejs . .
 
 # build/pack binaries from sources
 RUN pnpm install
+# seeds!
+# RUN pnpm migration:run
+# RUN pnpm seed
 RUN pnpm build
 
 # exposed port

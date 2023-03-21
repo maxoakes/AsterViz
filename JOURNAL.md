@@ -126,3 +126,7 @@ Another issue is that I need to migrate and seed the database on docker compose,
 Tuesday end-of-day is my cut off for working on this project, as I still have to write a paper in another course.
 
 # March 21
+
+Docker is being a pain to set up correctly. You know the story. One error gets fixed. Another comes up in the next step. Fix that error, that breaks something else. Repeat.
+
+Fixing Docker is taking up a lot of time, so I will not be able to guarantee that the final project submission will be that visually pleasing, as I have not gotten to that part yet. I am also starting to doubt there will be a flawless docker compose up execution.
