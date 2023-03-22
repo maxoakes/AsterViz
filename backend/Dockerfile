@@ -22,7 +22,8 @@ ENV NPM_CONFIG_LOGLEVEL=info
 ENV VITE_IP_ADDR=0.0.0.0
 ENV VITE_PORT=8080
 ENV VITE_LOGS_DIR=logs/
-ENV VITE_DB_HOST=postgres
+ENV VITE_DB_HOST_DEV=127.0.0.1
+ENV VITE_DB_HOST_PROD=postgres
 ENV VITE_DB_PORT=5432
 ENV VITE_DB_USER=asterviz
 ENV VITE_DB_PASS=asterviz
@@ -42,8 +43,8 @@ COPY --chown=nodejs:nodejs . .
 # build/pack binaries from sources
 RUN pnpm install
 # seeds!
-# RUN pnpm migration:run
-# RUN pnpm seed
+RUN pnpm migration:runProd
+RUN pnpm seed
 RUN pnpm build
 
 # exposed port

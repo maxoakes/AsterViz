@@ -17,6 +17,7 @@
     "typeorm:sync": "pnpm buildJS && typeorm schema:sync -d buildTypeorm/db/datasources/dev_datasource.js",
     "typeorm:updateDatasource": "pnpm buildJS && typeorm-codebase-sync addReferences --dataSource ./src/db/datasources/dev_datasource.ts --migrations ./src/db/migrations --entities ./src/db/models --subscribers ./src/db/subscribers",
     "migration:run": "pnpm buildJS && typeorm migration:run -d buildTypeorm/db/datasources/dev_datasource.js",
+    "migration:runProd": "pnpm buildJS && typeorm migration:run -d buildTypeorm/db/datasources/prod_datasource.js",
     "migration:create": "pnpm buildJS && typeorm migration:create",
     "migration:generate": "pnpm buildJS && typeorm migration:generate -d buildTypeorm/db/datasources/dev_datasource.js",
     "migration:revert": "pnpm buildJS && typeorm migration:revert -d buildTypeorm/db/datasources/dev_datasource.js",
