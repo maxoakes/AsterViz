@@ -15,7 +15,7 @@ const env = process.env;
 export const AppDataSource = new TypeORM.DataSource(
 	{
 		type: "postgres",
-		host: import.meta.env.VITE_DB_HOST_DEV,
+		host: "postgres",
 		port: Number(env.VITE_DB_PORT),
 		username: env.VITE_DB_USER,
 		password: env.VITE_DB_PASS,
