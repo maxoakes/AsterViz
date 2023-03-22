@@ -130,3 +130,13 @@ Tuesday end-of-day is my cut off for working on this project, as I still have to
 Docker is being a pain to set up correctly. You know the story. One error gets fixed. Another comes up in the next step. Fix that error, that breaks something else. Repeat.
 
 Fixing Docker is taking up a lot of time, so I will not be able to guarantee that the final project submission will be that visually pleasing, as I have not gotten to that part yet. I am also starting to doubt there will be a flawless docker compose up execution.
+
+Later:
+
+I have gone through each container individually and confirmed if they work in their own container. I have determined that minio, postgres, frontend and routeCS all work individually, and together. And when I run the backend via pnpm dev or node build, then everything appears to work. The problems start when the backend is in a container.
+
+However, there is an odd bug where for the user on the frontend, if the backend is compiled, then logging into auth0 does not appear to work correctly. 
+
+Tomorrow I will spend a few hours trying to get the backend container working. As a backup, I have written a step-by-step of getting everything to run in a dev environment (with minio, postgre and routecs running in containers).
+
+I also do want to spend a little bit of time improving the CSS and making the required video.

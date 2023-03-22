@@ -1,24 +1,3 @@
-# asterviz SETUP
-(All commands are with respect to the root directory of the project)
-
-> Clone repository
-> Copy and configure .env file (cp backend/.env.example backend/.env)
-> Install dependencies (cd backend/ && pnpm install)
-> Start database (docker compose up postgres)
-> Reset prior Typeorm setup (cd backend/ && pnpm typeorm:drop)
-> Migrate database (cd backend/ && pnpm migration:run)
-> Seed Database (cd backend/ && pnpm seed)
-> Test backend ( cd backend/ && pnpm test)
-> Start backend (cd backend/ && pnpm dev)
-
-### Auto-generating migration file from current Models
-
-This is ONLY NEEDED during our initial development in-class!
-Once you clone the repository with the migrations already in it,
-you ONLY do the above!
-> pnpm typeorm:drop
-> pnpm migration:generate ./src/db/migrations/initialize.ts
-
 # VM setup (Ubuntu 22.04.2 LTS)
 ## On clean install:
 * sudo apt-get install virtualbox-guest-additions-iso
@@ -54,7 +33,7 @@ you ONLY do the above!
 * sudo apt install git
 * [cd to new directory]
 
-### Setup
+# Run Docker + Setup
 * git clone https://github.com/maxoakes/AsterViz.git
 * cd AsterViz/
 * Run:
@@ -73,3 +52,37 @@ To fully wipe all images
 * docker rm $(docker ps -a -q)
 * docker rmi $(docker images -q)
 * rm -rf AsterViz/
+
+# Docker not working?
+## Run the project in a dev environment
+Start the DB
+* docker compose up postgres
+Start minio
+* docker compose up minio
+
+NOTE!: Seeding requires DB AND minio to be running
+Go to backend and initialize it
+* pnpm i
+* pnpm migration:run
+* pnpm seed
+
+Start routeCS
+* docker compose routecs
+
+Start the backend
+* pnpm dev
+
+Start the frontend
+* pnpm i
+* pnpm dev
+* Navigate to localhost:5173
+
+# Other
+### migration routine
+(All commands are with respect to the root directory of the project)
+
+* pnpm typeorm:drop
+* pnpm migration:generate ./src/db/migrations/initialize
+* change import in dev_datasource and migration object
+* pnpm migration:run
+* pnpm seed

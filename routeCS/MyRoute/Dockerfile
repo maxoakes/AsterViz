@@ -6,6 +6,7 @@ COPY . .
 RUN dotnet publish -c release -o /app
 
 FROM mcr.microsoft.com/dotnet/aspnet:6.0
+ENV ASPNETCORE_URLS=http://+:5203
 WORKDIR /app
 COPY --from=build /app .
 ENTRYPOINT ["dotnet", "MyRoute.dll"]

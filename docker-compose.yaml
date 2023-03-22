@@ -78,12 +78,12 @@ services:
     ports:
       - "5203:5203"
     environment:
-      - DB_HOST=localhost
+      - DB_HOST=postgres
       - DB_PORT=5432
       - DB_USER=asterviz
       - DB_PASS=asterviz
       - DB_NAME=asterviz
-      - SERVER_IP=localhost
+      - SERVER_IP=127.0.0.1
       - SERVER_PORT=8080
     depends_on: #This is a lie
       - postgres
