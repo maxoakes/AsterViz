@@ -11,22 +11,21 @@ export function Table()
   const [pageNumber, setPageNumber] = useState(1);
   const [data, setData] = useState<AsteroidResponse[]>([]);
   const columns = [
-    { label: "SPKID", accessor: "spkid" },
-    { label: "Name", accessor: "full_name" },
-    { label: "NEO", accessor: "neo" },
-    { label: "PHA", accessor: "pha" },
-    { label: "Absolute Magnitude", accessor: "absmag" },
-    { label: "Diameter", accessor: "diameter" },
-    { label: "Albedo", accessor: "albedo" },
-    { label: "Eccentricity", accessor: "eccentricity" },
-    { label: "Semi-Major Axis", accessor: "semimajor_axis" },
-    { label: "Perihelion", accessor: "perihelion" },
-    { label: "Inclination", accessor: "inclination" },
-    { label: "Longitude of Ascending Node", accessor: "asc_node_long" },
-    { label: "Argument of Periapsis", accessor: "arg_periapsis" },
-    { label: "Mean Anomaly", accessor: "mean_anomaly" },
-    { label: "Classification", accessor: "classifications_abbreviation" },
-    { label: "Creator", accessor: "users_name" },
+    { label: "SPKID", accessor: "spkid", hint: "Small-Body database lookup name"},
+    { label: "Name", accessor: "full_name", hint: "Full formal name of the body" },
+    { label: "NEO", accessor: "neo", hint: "Near-Earth Object" },
+    { label: "PHA", accessor: "pha", hint: "Potentially Hazardous Asteroid" },
+    { label: "Mv", accessor: "absmag", hint: "Absolute Magnitude. The brightness of a celestial object as it would be seen at a standard distance of 10 parsecs." },
+    { label: "Albedo", accessor: "albedo", hint: "Fraction of light that the body surface reflects. From reflecting no light (0.0) to reflecting all light (1.0)" },
+    { label: "⌀ (km)", accessor: "diameter", hint: "Average diameter of the body in kilometers" },
+    { label: "e", accessor: "eccentricity", hint: "Eccentricity. The elongation of the orbit. 0.0 is perfectly circular, 1.0+ is parabolic." },
+    { label: "a (km)", accessor: "semimajor_axis", hint: "Semi-major axis of the bodies orbit. From the center of the ellipse to the longest distance. Measured in kilometers" },
+    { label: "q (AU)", accessor: "perihelion", hint: "Perihelion. The shortest distance in the orbit between it and the sun. Measured in asternomical units (AU)." },
+    { label: "i (deg)", accessor: "inclination", hint: "Inclination. The tilt in degrees from the reference plane." },
+    { label: "Ω (deg)", accessor: "asc_node_long", hint: "Longitude of the Ascending Node. The angle in degrees of the ascending node." },
+    { label: "ω (deg)", accessor: "arg_periapsis", hint: "Argument of Periapsis. Measures in degrees from the line of the ascending node on the equatorial plane to the point of periapsis passage." },
+    { label: "Class", accessor: "classifications_abbreviation", hint: "Classification abbreviation of the body" },
+    { label: "Creator", accessor: "users_name",hint: "Creator of the body in this database"  },
   ];
 
   useEffect(() => {
@@ -70,6 +69,12 @@ export function TableBody({ tableData, columns }: any)
         {
           cellData = (cellData) ? "Yes" : "No";
         }
+        else if (typeof cellData === "number")
+        {
+          let isDec = (cellData.toString().split('.').length > 1)
+          if (isDec && cellData.toString().split('.')[1].length > 4)
+            cellData = cellData.toFixed(4)
+        }
         return <td key={accessor}>{cellData}</td>;
       })}
      </tr>
@@ -84,9 +89,11 @@ export function TableHead({ columns }: any)
   return (
     <thead>
     <tr>
-      {columns.map(({ label, accessor }: any) => {
+      {columns.map(({ label, accessor, hint }: any) => {
         return (
-          <th className="table-column" key={accessor}>{label}</th>
+          <th className="table-column" key={accessor}>
+            <abbr title={hint}>{label}</abbr>
+          </th>
         );
       })}
     </tr>
@@ -106,7 +113,7 @@ function SearchBars({ setQuery, setOrder, setPageNumber, setPageSize }: any)
   return (
     <>
       <div className="search-area">
-        <input type="text" placeholder="Query" onChange={(e) => setQuery(e.target.value)}/>
+        <input type="text" placeholder="Asteroid Name" onChange={(e) => setQuery(e.target.value)}/>
         <select onChange={(e) => setOrder(e.target.value)}>
           <option value="ASC">Ascending</option>
           <option value="DESC">Descending</option>
@@ -137,7 +144,7 @@ export function DatabaseStats()
   }, []);
 
   return (
-    <div>
+    <div className="stats">
       <p>There are {databaseSize} entries in the asteroid database</p>
     </div>
   );

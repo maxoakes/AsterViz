@@ -140,3 +140,7 @@ However, there is an odd bug where for the user on the frontend, if the backend 
 Tomorrow I will spend a few hours trying to get the backend container working. As a backup, I have written a step-by-step of getting everything to run in a dev environment (with minio, postgre and routecs running in containers).
 
 I also do want to spend a little bit of time improving the CSS and making the required video.
+
+# March 22
+
+I spent (probably too much) time making the website look better. I removed the random colors and stuck to a 3-color theme, fixed how text is displayed, added tooltips for the astronomy/math terms, and attempted to fix the position of planets to actually be on the orbital ellipse, but I need more time to figure out the math on that and actually have React do what I want it to do. I would say the website is presentable, but I still need to fix the docker deployment

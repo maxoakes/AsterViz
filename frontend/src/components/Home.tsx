@@ -8,7 +8,7 @@ import {AsteroidResponse, au, CelestialBody, degToRad, metersToUnits, minEntityR
 import { httpClient } from "../services/HttpService";
 import { ReactSearchAutocomplete } from 'react-search-autocomplete'
 import { Link, useNavigate } from "react-router-dom";
-import { Texture } from "three";
+import { Texture, Vector3 } from "three";
 import { minioUrl } from "../App";
 
 export function Home()
@@ -138,7 +138,7 @@ export function SolarSystem({appendAsteroid, appendPlanet, assignSelected, plane
 				attributes.arg_periapsis,
 				attributes.mean_anomaly,
 				attributes.true_anomaly,
-				attributes.classid);
+				attributes.className);
 			if (thisType == CelestialBody.Planet)
       {
 				appendPlanet(newPlanetObject);
@@ -158,7 +158,6 @@ export function SolarSystem({appendAsteroid, appendPlanet, assignSelected, plane
     fetchTexturePath().catch(console.error);
 	}, []);
 
-	// EntityComponent's `position` property is provided by react-three-fiber and newScale is ours
 	return (
 		<>
 			<mesh name="Sun">
@@ -205,31 +204,33 @@ function EntityComponent(props: EntityProps) {
   }, [])
 
 	let {entity, assignSelected} = props;
-  let visualRadius = Math.max(metersToUnits(entity.diameter/2)*400000, minEntityRadius*2)
+  let visualRadius = Math.max(metersToUnits(entity.diameter/2)*400000, minEntityRadius*4)
   let orbitPoints = useMemo(() => new THREE.EllipseCurve(
     entity.focusDistance, 0, // ax, aY
     entity.semimajor_axis, entity.semiMinorAxis, // semiminor axis, semimajor axis
-    0.1, 2 * Math.PI - 0.1, // aStartAngle, aEndAngle
+    0.0, 2 * Math.PI, // aStartAngle, aEndAngle
     false, // aClockwise
-    degToRad(0) // aRotation
+    0 // aRotation
   ).getPoints(Math.max(64, Math.round(2000*entity.eccentricity))), []);
+
 	return (<>
 		<mesh 
       {...props} 
       ref={planetMesh} 
       name={entity.name} 
-      position={[metersToUnits((entity.perihelion)*au), 0, 0]} 
+      position={[entity.perihelion * Math.cos(degToRad(entity.asc_node_long)), 0, entity.perihelion * Math.sin(degToRad(entity.asc_node_long))]} 
       onClick={(event) => {assignSelected(entity)}} 
       visible={entity.isVisible}
     >
       {entity.type === CelestialBody.Planet ? <sphereGeometry args={[visualRadius, 64, 32]}/> : <icosahedronGeometry args={[visualRadius, 2]}/>}
 			<meshStandardMaterial map={texture} color={entity.type === CelestialBody.Planet ? 0xffffff : 0xff00ff}/>
 		</mesh>
+    {/* <gridHelper args={[5]} rotation={planeRotation}/> */}
     <Line 
       // ref={orbitLine}
       worldUnits
       name={`${entity.name}'s Orbit`} 
-      rotation={[degToRad(entity.inclination+90), 0, degToRad(entity.asc_node_long)]} 
+      rotation={[degToRad(entity.inclination+90), 0,degToRad(entity.asc_node_long)]} 
       points={orbitPoints} 
       color={(entity.type == CelestialBody.Planet) ? 0x00ff00 : 0xff00ff}
       wireframe lineWidth={0.001}
@@ -247,10 +248,16 @@ export function InfoView(props: InfoViewProp) {
 
   let infoItems = createInfoDictionary(selectedEntity);
   const infoList = Object.keys(infoItems).map(item => 
-    <div className="info-container" key={item}>
-      <p className="info-title">{item}</p>
-      <p className="info-string">{infoItems[item]}</p>
-    </div>);
+      (item !=="Name") ?
+        <div className="info-container" key={item}>
+          <p className="info-title">{item}</p>
+          <p className="info-string">{infoItems[item]}</p>
+        </div>
+        :
+        <div className="info-name-container" key={item}>
+          <p className="info-name">{infoItems[item]}</p>
+        </div>
+    );
 	return (
     <>
       {(selectedEntity) ? 
@@ -267,19 +274,20 @@ function createInfoDictionary(entity: Entity | undefined): Record <string, any>
   {
     return {}
   }
-    return {"Name": entity.name,
-    "Type": entity.type, 
-    "Average Diameter": `${entity.diameter}km`,
-    "Albedo": entity.albedo,
-    "Eccentricity": entity.eccentricity,
-    "Semi-major Axis": `${entity.semimajor_axis} AU`,
-    "Perihelion": `${entity.perihelion} AU`,
-    "Inclination": `${entity.inclination} deg`,
-    "Longitude of Ascending Node": `${entity.asc_node_long} deg`, 
-    "Argument of Periapsis": `${entity.arg_periapsis} deg`,
-    "Mean Anomaly": `${entity.mean_anomaly} deg`, 
-    "True Anomaly": `${entity.true_anomaly} deg`,
-    "Class": entity.classid
+    return {
+      "Name": entity.name,
+      "Type": entity.type, 
+      "Average Diameter": `${entity.diameter.toFixed(2)} km`,
+      "Albedo": entity.albedo,
+      "Eccentricity": entity.eccentricity.toFixed(5),
+      "Semi-major Axis": `${entity.semimajor_axis.toFixed(4)} AU`,
+      "Perihelion": `${entity.perihelion.toFixed(4)} AU`,
+      "Inclination": `${entity.inclination.toFixed(4)} deg`,
+      "Longitude of Ascending Node": `${entity.asc_node_long.toFixed(4)} deg`, 
+      "Argument of Periapsis": `${entity.arg_periapsis.toFixed(4)} deg`,
+      // "Mean Anomaly": `${entity.mean_anomaly} deg`, 
+      // "True Anomaly": `${entity.true_anomaly} deg`,
+      "Class": entity.className
   };
 }
 
@@ -300,7 +308,7 @@ export function SidePanel(props: SidePanelProp)
   const entityChecklist = allEntities.map(item => 
     <div className="entity-list-item" key={item.name}>
       <input type={"checkbox"} name={`${item.name}-toggle`} onClick={() => toggle(item)} checked={item.isVisible} onChange={(e => {})}/>
-      {(item.type == CelestialBody.Asteroid) ? <button type="button" onClick={() => trash(item)} className="inline-entity-button"><img src="https://i.imgur.com/MzzuH05.png"/></button> : <></>}
+      {(item.type == CelestialBody.Asteroid) ? <button type="button" onClick={() => trash(item)} className="inline-entity-button"></button> : <></>}
       <label htmlFor={`${item.name}-toggle`}>{item.name}</label>
       
     </div>
@@ -309,7 +317,7 @@ export function SidePanel(props: SidePanelProp)
 	return (
 		<>
 			<div className="side-window" style={{display: isOpen ? "block" : "none", right: 0}} id="rightMenu">
-				<button onClick={() => setIsOpen(current => !current)} className="transition-button full-width close-button">
+				<button onClick={() => setIsOpen(current => !current)} className="transition-button full-width">
           Close &times;
         </button>
         <SearchBar appendAsteroid={appendAsteroid}/>
@@ -357,7 +365,7 @@ export function SearchBar(props: SearchBarProps)
     const newAsteroid = new Entity(
       CelestialBody.Asteroid, item.full_name, item.diameter, item.albedo, 
       item.eccentricity, item.semimajor_axis, item.perihelion, item.inclination,
-      item.asc_node_long, item.arg_periapsis, item.mean_anomaly, item.mean_anomaly, 0);
+      item.asc_node_long, item.arg_periapsis, item.mean_anomaly, item.mean_anomaly, "");
     appendAsteroid(newAsteroid)
   };
 
@@ -382,18 +390,16 @@ export function SearchBar(props: SearchBarProps)
         onClear={handleOnClear}
         showIcon={true}
         styling={{
-          height: "34px",
-          border: "1px solid darkgreen",
+          height: "32px",
+          border: "1px solid var(--color-accent)",
           borderRadius: "4px",
           backgroundColor: "white",
           boxShadow: "none",
-          hoverBackgroundColor: "lightgreen",
-          color: "darkgreen",
+          color: "var(--color-accent)",
           fontSize: "12px",
-          fontFamily: "Courier",
-          iconColor: "green",
-          lineColor: "lightgreen",
-          placeholderColor: "darkgreen",
+          fontFamily: "var(--bs-font-sans-serif)",
+          iconColor: "black",
+          lineColor: "var(--color-accent)",
           clearIconMargin: "3px 8px 0 0",
           zIndex: 2,
         }}

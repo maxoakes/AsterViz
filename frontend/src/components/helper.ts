@@ -24,9 +24,9 @@ export function degToRad(degrees: number)
 }
 
 export enum CelestialBody {
-    Star = -1,
-    Planet = 0,
-    Asteroid = 1,
+    Star = "Star",
+    Planet = "Planet",
+    Asteroid = "Asteroid",
 }
 
 export type AsteroidResponse = {

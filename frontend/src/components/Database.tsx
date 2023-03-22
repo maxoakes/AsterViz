@@ -126,13 +126,15 @@ export function AccountPanel()
 
 	return (
 	<>
-		<Auth0Login/>
-		<Auth0Logout/>
-		{isAuthenticated && userMetadata && (
-			<>
-				{userMetadata.nickname}
-			</>
-		)}
+		
+		
+		{(isAuthenticated && userMetadata) ?
+			(<>
+				<Auth0Logout/>
+				<p>{userMetadata.nickname}</p>
+			</>) : 
+			<Auth0Login/>
+		}
 	</>)
 }
 

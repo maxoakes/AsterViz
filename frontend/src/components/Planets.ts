@@ -13,7 +13,7 @@ export interface SolarSystemPlanetDataType {
     arg_periapsis: number,
     mean_anomaly: number,
     true_anomaly: number,
-    classid: number
+    className: string
 } 
 
 export const solarSystemPlanetData = {
@@ -32,7 +32,7 @@ export const solarSystemPlanetData = {
         arg_periapsis: 29.124,
         mean_anomaly: 0,
         true_anomaly: 0,
-        classid: -1
+        className: "Airless Subferra"
     },
     'Venus': {
         name: 'Venus',
@@ -49,7 +49,7 @@ export const solarSystemPlanetData = {
         arg_periapsis: 54.884,
         mean_anomaly: 0,
         true_anomaly: 0,
-        classid: -1
+        className: "Aria Terra"
     },
     'Earth': {
         name: 'Earth',
@@ -66,7 +66,7 @@ export const solarSystemPlanetData = {
         arg_periapsis: 114.20783,
         mean_anomaly: 0,
         true_anomaly: 0,
-        classid: -1
+        className: "Marine Terra"
     },
     'Mars': {
         name: 'Mars',
@@ -83,7 +83,7 @@ export const solarSystemPlanetData = {
         arg_periapsis: 286.5,
         mean_anomaly: 0,
         true_anomaly: 0,
-        classid: -1
+        className: "Arid Subterra"
     },
     'Jupiter': {
         name: 'Jupiter',
@@ -100,7 +100,7 @@ export const solarSystemPlanetData = {
         arg_periapsis: 273.867,
         mean_anomaly: 0,
         true_anomaly: 0,
-        classid: -1
+        className: "Jupiter"
     },
     'Saturn': {
         name: 'Saturn',
@@ -117,7 +117,7 @@ export const solarSystemPlanetData = {
         arg_periapsis: 339.392,
         mean_anomaly: 0,
         true_anomaly: 0,
-        classid: -1
+        className: "Subjupiter"
     },
     'Uranus': {
         name: 'Uranus',
@@ -134,7 +134,7 @@ export const solarSystemPlanetData = {
         arg_periapsis: 96.998857,
         mean_anomaly: 0,
         true_anomaly: 0,
-        classid: -1
+        className: "Neptune"
     },
     'Neptune': {
         name: 'Neptune',
@@ -151,7 +151,7 @@ export const solarSystemPlanetData = {
         arg_periapsis: 273.187,
         mean_anomaly: 0,
         true_anomaly: 0,
-        classid: -1
+        className: "Nuptune"
     },
     'Pluto': {
         name: 'Pluto',
@@ -168,23 +168,23 @@ export const solarSystemPlanetData = {
         arg_periapsis: 113.834,
         mean_anomaly: 0,
         true_anomaly: 0,
-        classid: -1
+        className: "Arid Miniaquaria"
     },
-    'sample': {
-        name: 'Hyakutake',
-        neo: false,
-        pha: false,
-        absmag: 0.0,
-        diameter: 2.2, //km
-        albedo: 0.1,
-        eccentricity: 0.9998946,
-        semimajor_axis: 1700,
-        perihelion: 0.2301987, //au
-        inclination: 124.92246, //deg
-        asc_node_long: 188.05766,
-        arg_periapsis: 130.17218,
-        mean_anomaly: 0,
-        true_anomaly: 0,
-        classid: 0
-    }
+    // 'sample': {
+    //     name: 'Hyakutake',
+    //     neo: false,
+    //     pha: false,
+    //     absmag: 0.0,
+    //     diameter: 2.2, //km
+    //     albedo: 0.1,
+    //     eccentricity: 0.9998946,
+    //     semimajor_axis: 1700,
+    //     perihelion: 0.2301987, //au
+    //     inclination: 124.92246, //deg
+    //     asc_node_long: 188.05766,
+    //     arg_periapsis: 130.17218,
+    //     mean_anomaly: 0,
+    //     true_anomaly: 0,
+    //     className: "Asteroid"
+    // }
 }

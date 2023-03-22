@@ -16,7 +16,7 @@ export default class Entity
     arg_periapsis: number;
     mean_anomaly: number;
     true_anomaly: number;
-    classid: number;
+    className: string;
 
     // derived
     semiMinorAxis: number;
@@ -29,7 +29,7 @@ export default class Entity
     constructor(type: CelestialBody, name: string, diameter: number, albedo: number, 
         eccentricity: number, semimajor_axis: number, perihelion: number, 
         inclination: number, asc_node_long: number, arg_periapsis: number, 
-        mean_anomaly: number, true_anomaly: number, classid: number)
+        mean_anomaly: number, true_anomaly: number, className: string)
     {
         this.name = name;
         this.type = type;
@@ -43,7 +43,7 @@ export default class Entity
         this.arg_periapsis = arg_periapsis;
         this.mean_anomaly = mean_anomaly;
         this.true_anomaly = true_anomaly;
-        this.classid = classid;
+        this.className = className;
 
         // math
         this.semiMinorAxis = (semimajor_axis * Math.sqrt(1-eccentricity**2))

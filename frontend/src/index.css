@@ -1,11 +1,18 @@
 :root {
     --table-column-width: 100px;
-    background: rgb(255, 255, 255); 
+    --color-primary: rgb(38, 44, 49);
+    --color-secondary: rgb(240, 249, 255);
+    --color-accent: rgb(146, 179, 228);
+    --button-length: 30px;
+    --button-start-position: 25px;
+    --button-spacing: 60px;
 }
 
+/* Entire website */
 #root {
     width: 100vw;
     height: 100vh;
+    background-color: var(--color-primary);
 }
 
 body {
@@ -22,109 +29,84 @@ canvas {
     background-color: rgb(0, 0, 0);
     cursor: pointer;
 }
-    
+
+/* Main screen tab buttons */
 .side-window-button {
-    position: fixed; 
-    margin: 0px;
-    padding: 0;
+    background-color: var(--color-secondary);
     display: inline-block;
+    position: fixed; 
+    padding: 0;
     vertical-align: middle;
     text-align: center;
-    white-space: nowrap;
     border: none;
-    cursor: pointer;
-    height: 35px;
+    border-radius: 8px 0px 0px 8px; 
+    height: calc(var(--button-length) + 10px);
     z-index: 0;
-    background-color: rgb(250, 255, 209);
+    right: 0;
 }
 
 .button-icon {
-    padding: 0px;
     margin: 5px;
-    height: 25px;
-    width: 25px;
+    height: var(--button-length);
+    width: var(--button-length);
 }
 
 .first-button {
-    top: 20px;
-    right: 0;
+    top: var(--button-start-position)
 }
 
 .second-button {
-    top: 70px;
-    right: 0;
+    top: calc(var(--button-start-position) + var(--button-spacing))
 }
 
-.third-button {
-    top: 120px;
+/* Right-side Pull out menu */
+.side-window {
+    position: fixed; 
+    top: 0;
     right: 0;
+    width: 300px;
+    z-index: 1;
+    background-color: var(--color-primary);
+    height: 100%;
+    border-left: 1px solid var(--color-secondary);
 }
-    
+
 .transition-button {
-    background-color: rgb(255, 255, 255);
-    color: rgb(0, 0, 0);
-    font-size: larger;
+    background-color: var(--color-secondary);
+    color: var(--color-primary);
+    font-size: medium;
     border: none;
+    border-bottom: 3px solid var(--color-accent);
     cursor: pointer;
-}
-
-.close-button {
-    height: 50px;
+    height: 40px;
 }
     
 .full-width {
     width: 100%;
 }
-    
-.side-panel-top {
-    position: fixed; 
-    top: 0%;
-}
-    
-.side-window {
-    position: fixed; 
-    top: 0;
-    right: 0;
-    height: 100%;
-    width: 25%;
-    z-index: 0;
-    overflow: auto;
-    background-color: rgb(131, 102, 102);
-    position: fixed;
-}
 
 .main-search-bar-container {
-    margin: 8px;
-}
-
-#info-viewer {
-    display: flex;
-    flex-direction: column;
-    position: fixed;
-    padding: 2px;
-    top: 15px;
-    left: 15px;
-    background-color: chartreuse;
-    width: 250px;
-    border-radius: 24px;
+    margin: 6px;
 }
     
 #entity-list {
     display: flex;
     flex-direction: column;
-    padding: 4px;
-    background-color: brown;
+    padding: 2px;
 }
     
 .entity-list-item {
     margin: 2px;
-    background-color: aqua;
-    height: 35px;
+    border: 1px solid var(--color-accent);
+    border-radius: 4px;
+    background-color: white;
+    height: 32px;
 }
 
 .entity-list-item > * {
-    margin-left: 4px;
+    margin: 8px;
     vertical-align: middle;
+    color: var(--color-primary);
 }
     
 .entity-list-item * {
@@ -133,49 +115,52 @@ canvas {
 
 .inline-entity-button {
     padding: 0;
-    margin: 2px;
-    background-color: rgb(255, 176, 59);
-    border-radius: 8px;
-    width: 28px;  
+    margin: 0;
+    background-color: rgb(255, 0, 0);
+    border: none;
+    border-radius: 2px;
+    width: 12px;
+    height: 12px;
+    /* WHY WONT THIS ALIGN!!! */
+    vertical-align: -2px; 
 }
 
-.inline-entity-button img {
-    height: 20px;
-    vertical-align: -4px;
+/* Left-side info viewer */
+#info-viewer {
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    padding: 2px;
+    top: 15px;
+    left: 15px;
+    background-color: var(--color-primary);
+    width: 275px;
+    border: 1px solid var(--color-secondary);
+    border-radius: 12px;
 }
-    
-.entity-search-bar {
-    margin: 2px;
-    padding: 4px;
-    width: 300px;
-}
-    
-.search-button {
-    height: 50%;
-}
-    
+
 .info-container {
     display: grid;
     grid-template-columns: 50% 50% ;
     /* grid-template-rows: 30px; */
     padding: 1px;
-    background-color: aqua;
 }
     
 .info-container p {
-    display: inline;
     margin: 2px;
-    background-color: rgb(230, 202, 255);
 }
     
 .entity-title {
     margin: 2px;
     padding: 8px;
-    background-color: rgb(101, 101, 255);
 }
     
 .info-title {
     text-align: right;
+    text-transform: uppercase;
+    font-size: xx-small;
+    color: var(--color-accent);
+    vertical-align: bottom;
 }
     
 .info-title::after {
@@ -184,64 +169,109 @@ canvas {
     
 .info-string {
     float: left;
+    color: var(--color-secondary);
 }
-    
-#buttons {
-    display: flex;
-    flex-direction: column;
-    position: fixed; 
-    bottom: 0%;
+
+.info-name-container {
+    max-height: 70px;
 }
-    
-.widget-item label {
-    color: aliceblue;
+.info-name {
+    text-align: center;
+    font-size: larger;
+    text-transform: uppercase;
+    color: var(--color-secondary);
 }
-    
+
+/* Database page */
 .page-container {
     margin: 0;
     display: grid;
-    grid-template-columns: 70px auto 400px;
-    grid-template-rows: 35px 100fr auto;
+    grid-template-columns: 100px auto 200px;
+    grid-template-rows: 55px auto 150px;
     width: 100%;
-    background-color: rgb(0, 255, 106);
+    background-color: black;
 }
     
 .back-button {
     grid-column: 1 / 2;
     grid-row: 1 / 2;
-    background-color: brown;
+    margin: 6px;
+    text-align: center;
+    border: 2px solid var(--color-primary);
+    border-radius: 12px;
+    background-color: var(--color-accent);
 }
     
 .title-banner {
     grid-column: 2 / 3;
     grid-row: 1 / 2;
-    background-color: burlywood;
+    color: var(--color-secondary);
+}
+
+.title-banner > * {
+    margin: 0;
+    height: 100%;
+    line-height: 55px;
 }
 
 .login-button {
     grid-column: 3 / 4;
     grid-row: 1 / 2;
-    background-color: rgb(184, 16, 161);
 }
 
+.login-button > * {
+    float: right;
+    margin: 8px;
+    font-size: large;
+}
+
+.login-button p {
+    color: var(--color-secondary);
+}
+
+/* Database page content */
 .page-content {
     grid-column: 1 / 4;
     grid-row: 2 / 3;
-    background-color: rgb(175, 157, 189);
+    background-color: var(--color-secondary);
     min-height: 500px;
+    overflow-x: scroll;
 }
 
+.stats {
+    text-align: center;
+}
+.search-area {
+    border-bottom: 2px solid var(--color-primary);
+    text-align: center;
+}
+
+.search-area > * {
+    margin: 4px;
+    padding: 4px;
+    height: 32px;
+    border-radius: 8px;
+}
 .page-footer {
     grid-column: 1 / 4;
     grid-row: 3 / 4;
     padding: 20px 0;
-    background-color: rgb(100, 167, 194);
+    background-color: var(--color-primary);
 }
 
 .page-footer p {
     font-size: small;
+    color: var(--color-secondary);
 }
 
+table {
+    margin: auto;
+}
+
+thead, tr {
+    border-bottom: 1px solid var(--color-primary);
+}
 .table-column {
     width: var(--table-column-width);
+    padding: 4px;
 }
