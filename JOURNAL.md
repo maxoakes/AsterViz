@@ -149,3 +149,12 @@ I also do want to spend a little bit of time improving the CSS and making the re
 # March 22 (Making it pretty and trying to fix the backend container)
 
 I spent (probably too much) time making the website look better. I removed the random colors and stuck to a 3-color theme, fixed how text is displayed, added tooltips for the astronomy/math terms, and attempted to fix the position of planets to actually be on the orbital ellipse, but I need more time to figure out the math on that and actually have React do what I want it to do. I would say the website is presentable, but I still need to fix the docker deployment.
+
+It is almost midnight, and I still have no idea what the issue with the backend on docker is. Even when I know 100% that postgres is running, the backend cannot find it, either on `localhost` or `postgres`. I have looked into whether they are on the same internal network, changed names, attempted to assign specific addresses, nothing has worked. All of that trying has made a bit of a mess in the code with strings being in place of env references... I would be astounded if anyone could tell me what the issue with this was. I even installed Linux Mint on a different VM and still faces the same issues; granted, it still is technically Ubuntu.
+
+Even in the final hours of fiddling with the docker builds, deploying it with the instructions I provided didn't always work the first try. Sometimes the postgres server would throw some warns about collation, and not take queries from the backend. I swapped the image to a different version and that seemed to fix it, but I don't even know if that was the issue in the first place.
+
+As of right now on the night of 22, I am able to `docker compose up postgres minio routecs frontend`, then migrate/seed/dev run the backend, and everything works. Unfortunate, I do not know if that will be consistent across time and computers, despite changing nothing.
+
+Update to that Auth0 on frontend production build issue: if I spam click where the button to create an asteroid is, when pressing 'login', the appropriate entry does show up in the console, so that tells me the auth stuff works correctly, it is just failing to properly display that the user is actually logged in.
+
