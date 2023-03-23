@@ -61,6 +61,7 @@ Start everything but the backend
 
 Go to backend and initialize it, then start it
 * pnpm i
+* pnpm typeorm:drop
 * pnpm migration:run
 * pnpm seed
 * pnpm dev
