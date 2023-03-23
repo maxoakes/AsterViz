@@ -45,6 +45,7 @@
     * ./env.sh
 * Finally:
     * docker compose up
+    * Navigate to http://localhost:5000
 
 ### Cleanup
 To fully wipe all images
@@ -53,29 +54,19 @@ To fully wipe all images
 * docker rmi $(docker images -q)
 * rm -rf AsterViz/
 
-# Docker not working?
+# Docker not fully working?
 ## Run the project in a dev environment
-Start the DB
-* docker compose up postgres
-Start minio
-* docker compose up minio
+Start everything but the backend
+* docker compose up postgres minio routecs frontend
 
-NOTE!: Seeding requires DB AND minio to be running
-Go to backend and initialize it
+Go to backend and initialize it, then start it
 * pnpm i
 * pnpm migration:run
 * pnpm seed
-
-Start routeCS
-* docker compose routecs
-
-Start the backend
 * pnpm dev
 
-Start the frontend
-* pnpm i
-* pnpm dev
-* Navigate to localhost:5173
+Done!
+* Navigate to localhost:5000
 
 # Other
 ### migration routine

@@ -152,8 +152,9 @@ export function SolarSystem({appendAsteroid, appendPlanet, assignSelected, plane
       let sunTexturePathResponse = await httpClient.get(`/asteroid/image/sun`);
       const textureManager = new THREE.TextureLoader();
       textureManager.setPath(minioUrl)
-      console.log(minioUrl + sunTexturePathResponse.data.urls[0])
-      setSunTexture(textureManager.load(sunTexturePathResponse.data.urls[0]));
+      console.log(sunTexturePathResponse.data.urls[0])
+      let texture = textureManager.load(await sunTexturePathResponse.data.urls[0])
+      setSunTexture(texture);
 		};
     fetchTexturePath().catch(console.error);
 	}, []);
@@ -197,7 +198,7 @@ function EntityComponent(props: EntityProps) {
       let texturePath = await httpClient.get(dest);
       const textureManager = new THREE.TextureLoader();
       textureManager.setPath(minioUrl)
-      console.log(minioUrl + texturePath.data.urls[0])
+      console.log(texturePath.data.urls[0])
       setTexture(textureManager.load(texturePath.data.urls[0]));
 		};
     fetchTexturePath().catch(console.error);
